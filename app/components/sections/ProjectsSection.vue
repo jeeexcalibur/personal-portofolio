@@ -81,7 +81,7 @@ onMounted(() => {
         subtitle="Some of my recent work"
       />
 
-      <div class="grid md:grid-cols-2 gap-8">
+      <div class="grid md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
         <div 
           v-for="(project, index) in projects" 
           :key="project.title" 

@@ -60,7 +60,7 @@ const experiences = [
           class="card overflow-hidden group animate-slide-up"
           :style="{ animationDelay: `${index * 150}ms` }"
         >
-          <div class="p-6">
+          <div class="p-4 sm:p-6">
             <!-- Header -->
             <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
               <div class="flex items-start gap-4">
@@ -92,7 +92,7 @@ const experiences = [
             </div>
 
             <!-- Description -->
-            <ul class="space-y-2 mb-4 ml-12">
+            <ul class="space-y-2 mb-4 ml-0 sm:ml-12">
               <li 
                 v-for="(item, idx) in exp.description" 
                 :key="idx"
@@ -105,7 +105,7 @@ const experiences = [
             </ul>
 
             <!-- Technologies -->
-            <div class="flex flex-wrap gap-2 pt-4 ml-12" style="border-top: 1px solid var(--border);">
+            <div class="flex flex-wrap gap-2 pt-4 ml-0 sm:ml-12" style="border-top: 1px solid var(--border);">
               <span 
                 v-for="tech in exp.technologies" 
                 :key="tech"

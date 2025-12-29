@@ -55,7 +55,7 @@ const socialLinks = [
 
       <div class="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
         <!-- Contact Form -->
-        <div class="card p-6 md:p-8 animate-slide-up">
+        <div class="card p-4 sm:p-6 md:p-8 animate-slide-up">
           <form @submit.prevent="handleSubmit" class="space-y-6">
             <div>
               <label for="name" class="block text-sm font-medium mb-2 transition-colors" style="color: var(--text-primary);">Name</label>

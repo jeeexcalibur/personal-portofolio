@@ -26,7 +26,7 @@ const socialLinks = [
       <div class="flex flex-col md:flex-row items-center justify-between gap-4">
         <!-- Copyright -->
         <p class="text-sm transition-colors" style="color: var(--text-muted);">
-          © {{ currentYear }} Your Name. All rights reserved.
+          © {{ currentYear }} Jein Ananda. All rights reserved.
         </p>
 
         <!-- Social Links -->

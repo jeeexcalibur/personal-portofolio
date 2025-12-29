@@ -46,7 +46,7 @@ const skills = [
 
       <div class="space-y-8 max-w-4xl mx-auto">
         <!-- Achievements Card -->
-        <div class="card p-6 animate-slide-up">
+        <div class="card p-4 sm:p-6 animate-slide-up">
           <div class="flex items-center gap-3 mb-6">
             <span class="text-2xl">🏆</span>
             <h3 class="text-xl font-semibold" style="color: #fbbf24;">Achievements</h3>
@@ -64,7 +64,7 @@ const skills = [
         </div>
 
         <!-- Organizational Experience Card -->
-        <div class="card p-6 animate-slide-up animate-delay-100">
+        <div class="card p-4 sm:p-6 animate-slide-up animate-delay-100">
           <div class="flex items-center gap-3 mb-6">
             <span class="text-2xl">🎖️</span>
             <h3 class="text-xl font-semibold" style="color: #a3e635;">Organizational Experience</h3>
@@ -85,7 +85,7 @@ const skills = [
         </div>
 
         <!-- Skills & Competencies Card -->
-        <div class="card p-6 animate-slide-up animate-delay-200">
+        <div class="card p-4 sm:p-6 animate-slide-up animate-delay-200">
           <div class="flex items-center gap-3 mb-6">
             <span class="text-2xl">💡</span>
             <h3 class="text-xl font-semibold" style="color: var(--accent);">Skills & Competencies</h3>

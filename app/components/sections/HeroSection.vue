@@ -106,24 +106,24 @@ const scrollToContact = () => {
 
         <!-- Right: Profile Image with Blue Shape and Floating Badges -->
         <div class="flex justify-center lg:justify-end order-1 lg:order-2 animate-fade-in">
-          <div class="relative" style="width: 380px; height: 450px;">
+          <div class="relative w-[280px] h-[320px] sm:w-[340px] sm:h-[400px] lg:w-[380px] lg:h-[450px]">
             
             <!-- LARGE Blue decorative shape -->
             <div 
-              class="absolute rounded-[2.5rem] transition-all duration-500"
-              style="width: 300px; height: 360px; right: 0; top: 50%; transform: translateY(-50%) rotate(6deg); background-color: var(--accent); z-index: 1;"
+              class="absolute rounded-[2rem] sm:rounded-[2.5rem] transition-all duration-500 w-[200px] h-[250px] sm:w-[260px] sm:h-[320px] lg:w-[300px] lg:h-[360px]"
+              style="right: 0; top: 50%; transform: translateY(-50%) rotate(6deg); background-color: var(--accent); z-index: 1;"
             ></div>
             
-            <!-- Small white decorative shape - now uses CSS variable -->
+            <!-- Small white decorative shape - hidden on mobile -->
             <div 
-              class="absolute rounded-2xl shadow-lg transition-all duration-300"
+              class="absolute rounded-2xl shadow-lg transition-all duration-300 hidden sm:block"
               style="width: 70px; height: 70px; left: 10px; bottom: 50px; transform: rotate(12deg); background-color: var(--bg-card); border: 1px solid var(--border); z-index: 5;"
             ></div>
             
-            <!-- Profile Image Container - now uses CSS variable -->
+            <!-- Profile Image Container - responsive sizes -->
             <div 
-              class="absolute rounded-[2rem] overflow-hidden shadow-2xl transition-all duration-300"
-              style="width: 260px; height: 320px; right: 30px; top: 50%; transform: translateY(-50%); background-color: var(--bg-card); border: 1px solid var(--border); z-index: 10;"
+              class="absolute rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-2xl transition-all duration-300 w-[180px] h-[220px] sm:w-[220px] sm:h-[280px] lg:w-[260px] lg:h-[320px]"
+              style="right: 20px; top: 50%; transform: translateY(-50%); background-color: var(--bg-card); border: 1px solid var(--border); z-index: 10;"
             >
               <img 
                 src="/profile.png" 
@@ -132,9 +132,9 @@ const scrollToContact = () => {
               />
             </div>
 
-            <!-- Floating Badge - Web Designer - now uses CSS variable -->
+            <!-- Floating Badge - Web Designer - hidden on mobile -->
             <div 
-              class="floating-badge animate-float" 
+              class="floating-badge animate-float hidden sm:flex" 
               style="position: absolute; top: 20px; right: 20px; z-index: 20; background-color: var(--bg-card); border: 1px solid var(--border);"
             >
               <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background-color: var(--accent);">
@@ -145,9 +145,9 @@ const scrollToContact = () => {
               <span style="color: var(--text-primary);">Web Designer</span>
             </div>
 
-            <!-- Floating Badge - Developer - now uses CSS variable -->
+            <!-- Floating Badge - Developer - hidden on mobile -->
             <div 
-              class="floating-badge animate-float" 
+              class="floating-badge animate-float hidden sm:flex" 
               style="position: absolute; top: 160px; left: -10px; z-index: 20; animation-delay: 0.5s; background-color: var(--bg-card); border: 1px solid var(--border);"
             >
               <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background-color: #10b981;">
@@ -158,9 +158,9 @@ const scrollToContact = () => {
               <span style="color: var(--text-primary);">Fullstack Developer</span>
             </div>
 
-            <!-- Floating Badge - UI/UX - now uses CSS variable -->
+            <!-- Floating Badge - UI/UX - hidden on mobile -->
             <div 
-              class="floating-badge animate-float" 
+              class="floating-badge animate-float hidden lg:flex" 
               style="position: absolute; bottom: 30px; right: 100px; z-index: 20; animation-delay: 1s; background-color: var(--bg-card); border: 1px solid var(--border);"
             >
               <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background-color: #8b5cf6;">
