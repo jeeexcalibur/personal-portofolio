@@ -27,11 +27,11 @@ const scrollToContact = () => {
 </script>
 
 <template>
-  <nav class="fixed top-0 left-0 right-0 z-50 glass transition-all duration-300" style="border-bottom: 1px solid var(--border);">
+  <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" style="background-color: var(--bg-primary); border-bottom: 1px solid var(--border); backdrop-filter: blur(8px);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         <!-- Logo -->
-<a href="#home" class="text-2xl font-bold text-primary tracking-tighter" tabindex="0" style="transform: none;">JA<span class="text-white">.</span></a>
+<a href="#home" class="text-2xl font-bold tracking-tighter" tabindex="0" style="transform: none; color: var(--accent);">JA<span style="color: var(--text-primary);">.</span></a>
 
         <!-- Desktop Navigation -->
         <div class="hidden md:flex items-center space-x-8">

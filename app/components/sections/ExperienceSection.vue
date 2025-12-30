@@ -31,7 +31,7 @@ const experiences = [
   {
     company: 'Kalimantan Institute of Technology',
     role: 'Teaching Assistant',
-    period: 'Jan 2024 - Dec 2024',
+    period: 'Jan 2024 - Dec 2025',
     type: 'Part-time',
     description: [
       'Taught programming fundamentals across multiple courses: Basic Algorithm (Python), Basic Programming (JavaScript), OOP (PHP), Web Development (Laravel), and Cloud Computing (Laravel + Docker)',
