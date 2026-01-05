@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Analytics } from '@vercel/analytics/vue'
+
 const { initTheme } = useTheme()
 
 onMounted(() => {
@@ -19,5 +21,6 @@ onMounted(() => {
     </main>
     
     <Footer />
+    <Analytics />
   </div>
 </template>
