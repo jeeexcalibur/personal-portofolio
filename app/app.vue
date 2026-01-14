@@ -15,8 +15,9 @@ onMounted(() => {
     <main>
       <SectionsHeroSection />
       <SectionsAboutSection />
-      <SectionsProjectsSection />
+      <SectionsEducationSection />
       <SectionsExperienceSection />
+      <SectionsProjectsSection />
       <SectionsContactSection />
     </main>
     

@@ -33,8 +33,8 @@ const projects: Project[] = [
     description: 'A modern and elegant website for showcasing cake recipes and facilitating online cake sales. Features recipe management, categorization, a clean browsing interface, cashier system, and asset CRUD functionality. Built with Laravel Filament.',
     image: '/project-sweetelle.png',
     tags: ['Laravel', 'Filament', 'MySQL'],
-    demoUrl: 'https://www.sweetellebakery.com/',
-    repoUrl: 'https://github.com/jeeexcalibur/Sweetelle',
+    demoUrl: 'https://github.com/jeeexcalibur/Sweetelle',
+    repoUrl: '#',
     gradient: 'from-green-500 to-lime-500'
   },
   {
