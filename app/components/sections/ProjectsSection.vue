@@ -11,6 +11,15 @@ interface Project {
 
 const projects: Project[] = [
   {
+    title: 'Personnel Availability Dashboard',
+    description: 'A Personnel Availability Dashboard built with Laravel 12 for monitoring workforce metrics, overtime tracking, and absence management. This dashboard replicates Power BI formulas for accurate KPI calculations. Features include real-time availability metrics, OT ratio tracking, and department-wise analytics.',
+    image: '/project-dashboard-mp.png',
+    tags: ['Laravel 12', 'TailwindCSS 4.0', 'MySQL', 'Vite 7'],
+    demoUrl: 'https://github.com/jeeexcalibur/hc-performance-dashboard',
+    repoUrl: 'https://github.com/jeeexcalibur/hc-performance-dashboard',
+    gradient: 'from-blue-600 to-cyan-500'
+  },
+  {
     title: 'Serenity Booth',
     description: 'The premier free, browser-based photo booth application that lets you create beautiful photo strips just like classic photo booths. Take photos using your webcam, customize with colors, backgrounds, and stickers, then download your creation instantly — no account required!',
     image: '/project-serenity-booth.png',
@@ -18,6 +27,15 @@ const projects: Project[] = [
     demoUrl: 'https://serenitybooth.anandajein.my.id/',
     repoUrl: 'https://github.com/jeeexcalibur/Serenity-Booth',
     gradient: 'from-pink-400 to-purple-500'
+  },
+    {
+    title: 'EIS Mobile UI/UX Design',
+    description: 'Mobile interface design for the Employee Information System at PT Komatsu Remanufacturing Asia. Designed user flows, wireframes, and high-fidelity prototypes for Attendance (Face Recognition), Reimbursement, and Time Management features serving 700+ employees.',
+    image: '/project-eis-mobile.png',
+    tags: ['Figma', 'UI/UX', 'Mobile Design'],
+    demoUrl: 'https://www.figma.com/proto/AZjby73mEu6pIhxTxE2RkD/Mobile-Prototype?page-id=0%3A1&node-id=342-250&p=f&viewport=-115%2C405%2C0.02&t=c7HOW6ht121nFORy-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=10%3A36&show-proto-sidebar=1',
+    repoUrl: '#',
+    gradient: 'from-blue-500 to-cyan-500'
   },
   {
     title: 'Company Profile Boilerplate',
@@ -37,19 +55,19 @@ const projects: Project[] = [
     repoUrl: '#',
     gradient: 'from-green-500 to-lime-500'
   },
-  {
-    title: 'EIS Mobile UI/UX Design',
-    description: 'Mobile interface design for the Employee Information System at PT Komatsu Remanufacturing Asia. Designed user flows, wireframes, and high-fidelity prototypes for Attendance (Face Recognition), Reimbursement, and Time Management features serving 700+ employees.',
-    image: '/project-eis-mobile.png',
-    tags: ['Figma', 'UI/UX', 'Mobile Design'],
-    demoUrl: 'https://www.figma.com/proto/AZjby73mEu6pIhxTxE2RkD/Mobile-Prototype?page-id=0%3A1&node-id=342-250&p=f&viewport=-115%2C405%2C0.02&t=c7HOW6ht121nFORy-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=10%3A36&show-proto-sidebar=1',
-    repoUrl: '#',
-    gradient: 'from-blue-500 to-cyan-500'
-  }
 ]
 
 const selectedProject = ref<Project | null>(null)
 const isModalOpen = ref(false)
+const showAllProjects = ref(false)
+
+const visibleProjects = computed(() => {
+  return showAllProjects.value ? projects : projects.slice(0, 4)
+})
+
+const toggleShowAll = () => {
+  showAllProjects.value = !showAllProjects.value
+}
 
 const openModal = (project: Project) => {
   selectedProject.value = project
@@ -83,9 +101,9 @@ onMounted(() => {
 
       <div class="grid md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
         <div 
-          v-for="(project, index) in projects" 
+          v-for="(project, index) in visibleProjects" 
           :key="project.title" 
-          class="card group overflow-hidden cursor-pointer animate-slide-up"
+          class="card card-enhanced gradient-border group overflow-hidden cursor-pointer animate-slide-up"
           :style="{ animationDelay: `${index * 100}ms` }"
           @click="openModal(project)"
         >
@@ -133,6 +151,25 @@ onMounted(() => {
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- View More Button -->
+      <div v-if="projects.length > 4" class="flex justify-center mt-8">
+        <button 
+          @click="toggleShowAll"
+          class="btn btn-outline flex items-center gap-2"
+        >
+          <span>{{ showAllProjects ? 'Show Less' : 'View More' }}</span>
+          <svg 
+            class="w-4 h-4 transition-transform duration-300" 
+            :class="showAllProjects ? 'rotate-180' : ''"
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
       </div>
     </div>
 
@@ -270,6 +307,7 @@ onMounted(() => {
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

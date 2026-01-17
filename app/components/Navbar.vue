@@ -1,18 +1,56 @@
 <script setup lang="ts">
 const { isDark, toggleTheme, initTheme } = useTheme()
 const isOpen = ref(false)
-
-onMounted(() => {
-  initTheme()
-})
+const activeSection = ref('home')
+const scrollProgress = ref(0)
+const isScrolled = ref(false)
 
 const navLinks = [
   { name: 'Home', href: '#home' },
   { name: 'About', href: '#about' },
-  { name: 'Projects', href: '#projects' },
-  { name: 'Experience', href: '#experience' },
   { name: 'Education', href: '#education' },
+  { name: 'Experience', href: '#experience' },
+  { name: 'Projects', href: '#projects' },
 ]
+
+onMounted(() => {
+  initTheme()
+  
+  // Set up IntersectionObserver for scroll-based active section detection
+  const sectionIds = ['home', 'about', 'education', 'experience', 'projects', 'contact']
+  
+  const observerOptions = {
+    root: null,
+    rootMargin: '-20% 0px -70% 0px', // Trigger when section is in the upper portion of viewport
+    threshold: 0
+  }
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        activeSection.value = entry.target.id
+      }
+    })
+  }, observerOptions)
+  
+  // Observe all sections
+  sectionIds.forEach((id) => {
+    const section = document.getElementById(id)
+    if (section) {
+      observer.observe(section)
+    }
+  })
+  
+  // Scroll progress tracking
+  const handleScroll = () => {
+    const scrollTop = window.scrollY
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight
+    scrollProgress.value = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0
+    isScrolled.value = scrollTop > 20
+  }
+  
+  window.addEventListener('scroll', handleScroll, { passive: true })
+})
 
 const scrollToSection = (href: string) => {
   isOpen.value = false
@@ -25,10 +63,27 @@ const scrollToSection = (href: string) => {
 const scrollToContact = () => {
   document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })
 }
+
+const isActive = (href: string) => {
+  return activeSection.value === href.replace('#', '')
+}
 </script>
 
 <template>
-  <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" style="background-color: var(--bg-primary); border-bottom: 1px solid var(--border); backdrop-filter: blur(8px);">
+  <!-- Scroll Progress Bar -->
+  <div 
+    class="scroll-progress"
+    :style="{ width: `${scrollProgress}%` }"
+  ></div>
+
+  <nav 
+    class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+    :style="{ 
+      backgroundColor: isScrolled ? 'var(--bg-primary)' : 'transparent',
+      borderBottom: isScrolled ? '1px solid var(--border)' : 'none',
+      backdropFilter: isScrolled ? 'blur(12px)' : 'blur(4px)'
+    }"
+  >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         <!-- Logo -->
@@ -37,12 +92,13 @@ const scrollToContact = () => {
         <!-- Desktop Navigation -->
         <div class="hidden md:flex items-center space-x-8">
           <a
-            v-for="(link, index) in navLinks"
+            v-for="link in navLinks"
             :key="link.name"
             :href="link.href"
             @click.prevent="scrollToSection(link.href)"
-            class="font-medium transition-all duration-300 hover:scale-105"
-            :style="{ color: index === 0 ? 'var(--accent)' : 'var(--text-secondary)' }"
+            class="font-medium transition-all duration-300 hover:scale-105 relative py-2"
+            :class="{ 'nav-link-active': isActive(link.href) }"
+            :style="{ color: isActive(link.href) ? 'var(--accent)' : 'var(--text-secondary)' }"
           >
             {{ link.name }}
           </a>

@@ -94,8 +94,8 @@ const skills = [
             <span 
               v-for="skill in skills" 
               :key="skill.name"
-              class="px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105 cursor-default"
-              style="background-color: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border);"
+              class="px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105 cursor-default border"
+              :class="`skill-${skill.category}`"
             >
               {{ skill.name }}
             </span>

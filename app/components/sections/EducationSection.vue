@@ -43,7 +43,7 @@ const education = [
           >
             <!-- Timeline Dot -->
             <div 
-              class="absolute left-2 sm:left-4 top-1 w-4 h-4 rounded-full border-2 hidden sm:block z-10 transition-all duration-300 hover:scale-125"
+              class="absolute left-2 sm:left-4 top-1 w-4 h-4 rounded-full border-2 hidden sm:block z-10 transition-all duration-300 hover:scale-125 timeline-dot-animated"
               style="background-color: var(--bg-primary); border-color: var(--accent);"
             ></div>
 

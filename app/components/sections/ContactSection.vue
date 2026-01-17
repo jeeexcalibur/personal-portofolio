@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import emailjs from '@emailjs/browser'
+
 const form = reactive({
   name: '',
   email: '',
@@ -7,20 +9,46 @@ const form = reactive({
 
 const isSubmitting = ref(false)
 const isSubmitted = ref(false)
+const hasError = ref(false)
+
+// EmailJS credentials
+const EMAILJS_SERVICE_ID = 'service_7vxaka8'
+const EMAILJS_TEMPLATE_ID = 'template_g7pjjmg'
+const EMAILJS_PUBLIC_KEY = 'qcpezEgoC_JEcApqd'
 
 const handleSubmit = async () => {
   isSubmitting.value = true
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  isSubmitting.value = false
-  isSubmitted.value = true
+  hasError.value = false
   
-  form.name = ''
-  form.email = ''
-  form.message = ''
-  
-  setTimeout(() => {
-    isSubmitted.value = false
-  }, 5000)
+  try {
+    await emailjs.send(
+      EMAILJS_SERVICE_ID,
+      EMAILJS_TEMPLATE_ID,
+      {
+        from_name: form.name,
+        from_email: form.email,
+        message: form.message
+      },
+      EMAILJS_PUBLIC_KEY
+    )
+    
+    isSubmitted.value = true
+    form.name = ''
+    form.email = ''
+    form.message = ''
+    
+    setTimeout(() => {
+      isSubmitted.value = false
+    }, 5000)
+  } catch (error) {
+    console.error('EmailJS error:', error)
+    hasError.value = true
+    setTimeout(() => {
+      hasError.value = false
+    }, 5000)
+  } finally {
+    isSubmitting.value = false
+  }
 }
 
 const contactInfo = [
@@ -110,6 +138,17 @@ const socialLinks = [
             >
               <div v-if="isSubmitted" class="p-4 rounded-lg text-center font-medium text-green-500" style="background-color: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3);">
                 ✓ Message sent successfully!
+              </div>
+            </Transition>
+            
+            <!-- Error Message -->
+            <Transition
+              enter-active-class="transition duration-300"
+              enter-from-class="opacity-0 translate-y-2"
+              enter-to-class="opacity-100 translate-y-0"
+            >
+              <div v-if="hasError" class="p-4 rounded-lg text-center font-medium text-red-500" style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);">
+                ✕ Failed to send message. Please try again later.
               </div>
             </Transition>
           </form>
