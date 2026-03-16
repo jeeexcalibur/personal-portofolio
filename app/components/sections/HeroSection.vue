@@ -103,7 +103,7 @@ const openCVModal = () => {
               </svg>
             </a>
             <a 
-              href="https://linkedin.com/in/jeinananda" 
+              href="https://www.linkedin.com/in/jein-ananda-36a05b2b0/" 
               target="_blank" 
               class="social-link"
               aria-label="LinkedIn"
@@ -113,7 +113,7 @@ const openCVModal = () => {
               </svg>
             </a>
             <a 
-              href="mailto:jeinanandaperdhana@gmail.com" 
+              href="mailto:jeinananda12@gmail.com" 
               class="social-link"
               aria-label="Email"
             >
