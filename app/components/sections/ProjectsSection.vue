@@ -10,6 +10,16 @@ interface Project {
 }
 
 const projects: Project[] = [
+
+{
+  title: 'Chrema',
+  description: 'An AI-powered personal finance tracker inspired by the Greek word for wealth. Designed for first-time earners to manage daily expenses through natural language processing. Features real-time consumption tracking, smart budget allocation, and automated expense categorization using Gemini AI.',
+  image: 'project-chremate.png',
+  tags: ['Vue.js 3', 'Vite 7', 'Firebase', 'Gemini AI', 'TailwindCSS 4.0'],
+  demoUrl: 'https://chremate.anandajein.my.id/', 
+  repoUrl: 'https://github.com/jeeexcalibur/chremate',
+  gradient: 'from-emerald-500 to-teal-700'
+},
   {
     title: 'Personnel Availability Dashboard',
     description: 'A Personnel Availability Dashboard built with Laravel 12 for monitoring workforce metrics, overtime tracking, and absence management. This dashboard replicates Power BI formulas for accurate KPI calculations. Features include real-time availability metrics, OT ratio tracking, and department-wise analytics.',
