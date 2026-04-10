@@ -12,7 +12,7 @@ interface Project {
 const projects: Project[] = [
 
 {
-  title: 'Chrema',
+  title: 'Chremate',
   description: 'An AI-powered personal finance tracker inspired by the Greek word for wealth. Designed for first-time earners to manage daily expenses through natural language processing. Features real-time consumption tracking, smart budget allocation, and automated expense categorization using Gemini AI.',
   image: 'project-chremate.png',
   tags: ['Vue.js 3', 'Vite 7', 'Firebase', 'Gemini AI', 'TailwindCSS 4.0'],
