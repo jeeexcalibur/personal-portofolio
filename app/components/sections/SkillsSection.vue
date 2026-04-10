@@ -14,6 +14,11 @@ const skillCategories = [
     title: 'Tools & Others',
     icon: '🛠️',
     skills: ['Git', 'Docker', 'Linux', 'AWS', 'Figma', 'VS Code', 'CI/CD', 'REST API']
+  },
+  {
+    title: 'IT & Infra',
+    icon: '🖥️',
+    skills: ['IT Operations', 'Troubleshooting', 'Hardware & OS', 'Networking', 'System Admin', 'Backup Management']
   }
 ]
 </script>
@@ -26,7 +31,7 @@ const skillCategories = [
         subtitle="Technologies and tools I work with"
       />
 
-      <div class="grid md:grid-cols-3 gap-8">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <GlassCard v-for="category in skillCategories" :key="category.title" hoverable>
           <div class="text-center mb-6">
             <span class="text-4xl mb-3 block">{{ category.icon }}</span>

@@ -1,6 +1,20 @@
 <script setup lang="ts">
 const experiences = [
   {
+    company: 'Maybank',
+    role: 'Information Technology Infrastructure Engineer',
+    period: 'Apr 2026 - Present',
+    type: 'Full-time',
+    description: [
+      'Supported IT operations and troubleshooting for branch offices (KPNO), ensuring maximum uptime and reliability',
+      'Maintained IT infrastructure and monitored server room conditions, managing UPS, security systems, and routine backups',
+      'Performed hardware and software installations, including PCs, pinpads, operational systems, and core banking applications',
+      'Assisted in comprehensive IT infrastructure projects such as branch renovations, relocations, and network recabling'
+    ],
+    technologies: ['IT Infrastructure', 'System Administration', 'Hardware Configuration', 'Networking', 'Troubleshooting'],
+    icon: '🖥️'
+  },
+  {
     company: 'PT Komatsu Remanufacturing Asia',
     role: 'Web Developer Intern',
     period: 'Jul 2025 - Dec 2025',
