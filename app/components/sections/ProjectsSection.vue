@@ -232,11 +232,10 @@ onMounted(() => {
       >
         <div 
           v-if="isModalOpen" 
-          class="fixed inset-0 z-50 flex items-center justify-center p-4"
-          @click.self="closeModal"
+          class="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4"
         >
-          <!-- Backdrop -->
-          <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+          <!-- Backdrop — clickable to close -->
+          <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" @click="closeModal"></div>
           
           <!-- Modal Content -->
           <Transition
@@ -249,14 +248,19 @@ onMounted(() => {
           >
             <div 
               v-if="isModalOpen && selectedProject"
-              class="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl"
+              class="relative w-full sm:max-w-2xl max-h-[92vh] sm:max-h-[90vh] rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col"
               style="background-color: var(--bg-card); border: 1px solid var(--border);"
             >
-              <!-- Close Button -->
+              <!-- Mobile drag handle -->
+              <div class="flex justify-center pt-3 pb-1 sm:hidden">
+                <div class="w-10 h-1 rounded-full" style="background-color: var(--border);"></div>
+              </div>
+
+              <!-- Sticky close button — always visible -->
               <button 
                 @click="closeModal"
-                class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110"
-                style="background-color: var(--bg-tertiary); color: var(--text-secondary);"
+                class="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all hover:scale-110"
+                style="background-color: var(--bg-tertiary); color: var(--text-secondary); box-shadow: 0 4px 12px rgba(0,0,0,0.3);"
                 aria-label="Close modal"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -264,83 +268,86 @@ onMounted(() => {
                 </svg>
               </button>
 
-              <!-- Project Image -->
-              <div class="aspect-video relative overflow-hidden rounded-t-2xl" :class="!selectedProject.image ? `bg-gradient-to-br ${selectedProject.gradient}` : ''">
-                <img 
-                  v-if="selectedProject.image" 
-                  :src="selectedProject.image" 
-                  :alt="selectedProject.title"
-                  class="w-full h-full object-cover"
-                />
-                <div v-else class="absolute inset-0 flex items-center justify-center">
-                  <svg class="w-20 h-20 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-              </div>
-
-              <!-- Project Details -->
-              <div class="p-6">
-                <!-- Title -->
-                <h2 class="text-2xl font-bold mb-4" style="color: var(--text-primary);">
-                  {{ selectedProject.title }}
-                </h2>
-
-                <!-- Technologies -->
-                <div class="mb-6">
-                  <p class="text-xs uppercase tracking-wider mb-2 font-semibold" style="color: var(--text-muted);">
-                    Technologies
-                  </p>
-                  <div class="flex flex-wrap gap-2">
-                    <span 
-                      v-for="tag in selectedProject.tags" 
-                      :key="tag"
-                      class="text-sm px-3 py-1 rounded-full font-medium"
-                      style="background: var(--accent); color: white;"
-                    >
-                      {{ tag }}
-                    </span>
+              <!-- Scrollable content area -->
+              <div class="overflow-y-auto flex-1 overscroll-contain">
+                <!-- Project Image -->
+                <div class="aspect-video relative overflow-hidden sm:rounded-t-2xl" :class="!selectedProject.image ? `bg-gradient-to-br ${selectedProject.gradient}` : ''">
+                  <img 
+                    v-if="selectedProject.image" 
+                    :src="selectedProject.image" 
+                    :alt="selectedProject.title"
+                    class="w-full h-full object-cover"
+                  />
+                  <div v-else class="absolute inset-0 flex items-center justify-center">
+                    <svg class="w-20 h-20 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
                   </div>
                 </div>
 
-                <!-- Description -->
-                <div class="mb-6">
-                  <div class="flex items-center gap-2 mb-2">
-                    <svg class="w-4 h-4" style="color: var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <p class="text-xs uppercase tracking-wider font-semibold" style="color: var(--text-muted);">
-                      About This Project
+                <!-- Project Details -->
+                <div class="p-5 sm:p-6">
+                  <!-- Title -->
+                  <h2 class="text-xl sm:text-2xl font-bold mb-4" style="color: var(--text-primary);">
+                    {{ selectedProject.title }}
+                  </h2>
+
+                  <!-- Technologies -->
+                  <div class="mb-5 sm:mb-6">
+                    <p class="text-xs uppercase tracking-wider mb-2 font-semibold" style="color: var(--text-muted);">
+                      Technologies
+                    </p>
+                    <div class="flex flex-wrap gap-1.5 sm:gap-2">
+                      <span 
+                        v-for="tag in selectedProject.tags" 
+                        :key="tag"
+                        class="text-xs sm:text-sm px-2.5 sm:px-3 py-1 rounded-full font-medium"
+                        style="background: var(--accent); color: white;"
+                      >
+                        {{ tag }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Description -->
+                  <div class="mb-5 sm:mb-6">
+                    <div class="flex items-center gap-2 mb-2">
+                      <svg class="w-4 h-4" style="color: var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <p class="text-xs uppercase tracking-wider font-semibold" style="color: var(--text-muted);">
+                        About This Project
+                      </p>
+                    </div>
+                    <p class="text-sm sm:text-base leading-relaxed" style="color: var(--text-secondary);">
+                      {{ selectedProject.description }}
                     </p>
                   </div>
-                  <p class="leading-relaxed" style="color: var(--text-secondary);">
-                    {{ selectedProject.description }}
-                  </p>
-                </div>
 
-                <!-- Action Buttons -->
-                <div class="flex gap-3">
-                  <a 
-                    :href="selectedProject.demoUrl" 
-                    target="_blank"
-                    class="cta-primary !py-2.5 !px-5 !text-sm"
-                  >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                    Link
-                  </a>
-                  <a 
-                    v-if="selectedProject.repoUrl && selectedProject.repoUrl !== '#'"
-                    :href="selectedProject.repoUrl" 
-                    target="_blank"
-                    class="cta-secondary !py-2.5 !px-5 !text-sm"
-                  >
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
-                    </svg>
-                    GitHub
-                  </a>
+                  <!-- Action Buttons -->
+                  <div class="flex gap-3">
+                    <a 
+                      :href="selectedProject.demoUrl" 
+                      target="_blank"
+                      class="cta-primary !py-2.5 !px-5 !text-sm flex-1 sm:flex-none justify-center"
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                      Link
+                    </a>
+                    <a 
+                      v-if="selectedProject.repoUrl && selectedProject.repoUrl !== '#'"
+                      :href="selectedProject.repoUrl" 
+                      target="_blank"
+                      class="cta-secondary !py-2.5 !px-5 !text-sm flex-1 sm:flex-none justify-center"
+                    >
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                      </svg>
+                      GitHub
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
