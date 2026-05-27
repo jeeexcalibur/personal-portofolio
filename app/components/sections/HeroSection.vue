@@ -163,6 +163,11 @@ const openCVModal = () => {
               class="absolute rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-2xl transition-all duration-300 w-[180px] h-[220px] sm:w-[220px] sm:h-[280px] lg:w-[260px] lg:h-[320px]"
               style="right: 20px; top: 50%; transform: translateY(-50%); background-color: var(--bg-card); border: 1px solid var(--border); z-index: 10;"
             >
+              <!-- Subtle glow behind image on all screens -->
+              <div 
+                class="absolute -inset-4 rounded-[2rem] opacity-40 blur-2xl -z-10"
+                style="background: linear-gradient(135deg, var(--accent), var(--accent-cyan));"
+              ></div>
               <img 
                 src="/profile.png" 
                 alt="Jein Ananda - Fullstack Developer & UI/UX Designer" 
@@ -170,13 +175,13 @@ const openCVModal = () => {
               />
             </div>
 
-            <!-- Floating Badge - Web Designer - hidden on mobile -->
+            <!-- Floating Badge - IT Engineer - visible on all screens -->
             <div 
-              class="floating-badge animate-float hidden sm:flex" 
-              style="position: absolute; top: 20px; right: 20px; z-index: 20;"
+              class="floating-badge animate-float flex" 
+              style="position: absolute; top: 10px; right: 10px; z-index: 20; font-size: 0.75rem;"
             >
-              <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: linear-gradient(135deg, var(--accent), var(--accent-cyan));">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center" style="background: linear-gradient(135deg, var(--accent), var(--accent-cyan));">
+                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>

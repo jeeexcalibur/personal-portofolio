@@ -170,18 +170,32 @@ const isActive = (href: string) => {
       leave-from-class="opacity-100 translate-y-0"
       leave-to-class="opacity-0 -translate-y-2"
     >
-      <div v-if="isOpen" class="md:hidden glass" style="border-top: 1px solid var(--border);">
-        <div class="px-4 py-4 space-y-3">
+      <div v-if="isOpen" class="md:hidden" style="background: var(--bg-card); border-top: 1px solid var(--border); box-shadow: 0 20px 60px var(--shadow-lg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
+        <!-- Gradient accent line at top -->
+        <div class="h-0.5" style="background: linear-gradient(90deg, var(--accent), var(--accent-cyan), transparent);"></div>
+        <div class="px-5 py-5 space-y-1">
           <a
             v-for="link in navLinks"
             :key="link.name"
             :href="link.href"
             @click.prevent="scrollToSection(link.href)"
-            class="block py-2 font-medium transition-colors"
-            style="color: var(--text-secondary);"
+            class="flex items-center gap-3 py-3 px-4 rounded-xl font-medium transition-all duration-200"
+            :style="{ 
+              color: isActive(link.href) ? 'var(--accent)' : 'var(--text-secondary)',
+              backgroundColor: isActive(link.href) ? 'var(--accent-glow)' : 'transparent',
+              borderLeft: isActive(link.href) ? '3px solid var(--accent)' : '3px solid transparent'
+            }"
           >
             {{ link.name }}
+            <!-- Active indicator dot -->
+            <span 
+              v-if="isActive(link.href)"
+              class="w-1.5 h-1.5 rounded-full ml-auto"
+              style="background-color: var(--accent); box-shadow: 0 0 8px var(--accent-glow);"
+            ></span>
           </a>
+          <!-- Divider with gradient -->
+          <div class="h-px mx-2 my-3" style="background: linear-gradient(90deg, transparent, var(--border), transparent);"></div>
           <button 
             @click="scrollToContact"
             class="w-full btn btn-primary !py-2.5 mt-2"

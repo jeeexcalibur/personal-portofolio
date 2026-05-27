@@ -148,7 +148,7 @@ h6 {
 /* Story Beat Wrapper */
 .story-beat {
     position: relative;
-    padding: 3rem 0;
+    padding: 3.5rem 0;
 }
 
 @media (min-width: 768px) {
@@ -906,6 +906,13 @@ h6 {
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Mobile: add subtle glow to cards for visual depth */
+@media (max-width: 767px) {
+    .card {
+        box-shadow: 0 4px 24px var(--shadow), 0 0 0 1px var(--border-subtle);
+    }
+}
+
 .card:hover {
     border-color: var(--accent);
     transform: translateY(-4px);
@@ -1276,14 +1283,115 @@ textarea::placeholder {
 @media (max-width: 767px) {
     .parallax-layer {
         transform: none !important;
-        filter: blur(40px);
+        filter: blur(50px);
     }
 
+    /* Keep a softer ambient glow on mobile instead of removing entirely */
+    .parallax-layer-1 {
+        opacity: 0.3;
+    }
+    .parallax-layer-2 {
+        opacity: 0.25;
+    }
     .parallax-layer-3 {
-        display: none;
+        opacity: 0.12;
     }
 
     .chapter-rail {
         display: none;
+    }
+
+    /* Mobile hero: ensure grid overlay is visible */
+    .hero-grid-overlay {
+        background-size: 30px 30px;
+        opacity: 0.1;
+    }
+
+    /* Mobile cards: add gradient accent glow */
+    .card-enhanced {
+        position: relative;
+    }
+    .card-enhanced::before {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        border-radius: inherit;
+        padding: 1px;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(34, 211, 238, 0.15), transparent 60%);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    /* Mobile experience cards: subtle cyan border glow */
+    .exp-card {
+        box-shadow: 0 4px 20px rgba(34, 211, 238, 0.06), 0 0 0 1px rgba(34, 211, 238, 0.08);
+    }
+
+    /* Mobile: visible scrim layers for ambient effects */
+    .scrim {
+        filter: blur(40px);
+        opacity: 0.4;
+    }
+
+    /* Mobile: nicer beat dividers */
+    .beat-divider::before {
+        left: 15%;
+        right: 15%;
+    }
+
+    /* Mobile: glass effect refinement */
+    .glass {
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+
+    /* Mobile media blocks: subtle gradient shadow */
+    .media-block {
+        box-shadow: 0 8px 32px var(--shadow);
+    }
+
+    /* Mobile: scroll progress bar thicker for visibility */
+    .scroll-progress {
+        height: 3px;
+    }
+}
+
+/* ============================================
+   MOBILE TIMELINE
+   ============================================ */
+
+/* Mobile timeline: vertical accent line for structure */
+@media (max-width: 639px) {
+    .mobile-timeline-wrapper {
+        position: relative;
+        padding-left: 1.5rem;
+    }
+
+    .mobile-timeline-wrapper::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: linear-gradient(180deg, var(--accent) 0%, var(--accent-cyan) 50%, transparent 100%);
+        border-radius: 1px;
+    }
+
+    .mobile-timeline-dot {
+        position: absolute;
+        left: -5px;
+        top: 1.25rem;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--accent);
+        border: 2px solid var(--bg-primary);
+        box-shadow: 0 0 12px var(--accent-glow);
+        z-index: 2;
     }
 }

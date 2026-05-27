@@ -117,8 +117,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <section id="projects" ref="beatRef" class="story-beat transition-all duration-500" style="background-color: var(--bg-primary);">
-    <div class="scroll-grid">
+  <section id="projects" ref="beatRef" class="story-beat transition-all duration-500 relative overflow-hidden" style="background-color: var(--bg-primary);">
+    <!-- Ambient background scrim for depth -->
+    <div 
+      class="absolute inset-0 pointer-events-none"
+      style="background: radial-gradient(ellipse at 60% 30%, rgba(99, 102, 241, 0.05) 0%, transparent 50%), radial-gradient(ellipse at 40% 80%, rgba(244, 114, 182, 0.03) 0%, transparent 40%);"
+    ></div>
+    
+    <div class="scroll-grid relative z-10">
       <div class="max-w-5xl mx-auto">
         <!-- Story Beat Header — right-aligned on desktop (alternating) -->
         <div class="lg:text-right">

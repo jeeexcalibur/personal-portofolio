@@ -98,8 +98,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <section id="experience" ref="beatRef" class="story-beat transition-all duration-500" style="background-color: var(--bg-secondary);">
-    <div class="scroll-grid">
+  <section id="experience" ref="beatRef" class="story-beat transition-all duration-500 relative overflow-hidden" style="background-color: var(--bg-secondary);">
+    <!-- Ambient background scrim for depth -->
+    <div 
+      class="absolute inset-0 pointer-events-none"
+      style="background: radial-gradient(ellipse at 80% 20%, rgba(34, 211, 238, 0.06) 0%, transparent 50%), radial-gradient(ellipse at 20% 70%, rgba(99, 102, 241, 0.04) 0%, transparent 40%);"
+    ></div>
+    
+    <div class="scroll-grid relative z-10">
       <div class="max-w-5xl mx-auto">
         <!-- Section Header -->
         <div 
@@ -119,25 +125,25 @@ onMounted(() => {
 
         <!-- Timeline -->
         <div class="relative mt-10">
-          <!-- Timeline vertical line -->
+          <!-- Timeline vertical line — visible on all screens -->
           <div 
-            class="absolute left-5 sm:left-7 top-0 bottom-0 w-px hidden sm:block"
+            class="absolute left-3 sm:left-7 top-0 bottom-0 w-px"
             style="background: linear-gradient(180deg, var(--accent-cyan), rgba(34, 211, 238, 0.3), transparent);"
           ></div>
 
           <!-- Experience Cards -->
-          <div class="space-y-8">
+          <div class="space-y-6 sm:space-y-8">
             <div 
               v-for="(exp, index) in experiences" 
               :key="exp.role + exp.period"
               :data-beat-idx="index"
-              class="relative pl-0 sm:pl-16 transition-all duration-700 ease-out"
+              class="relative pl-10 sm:pl-16 transition-all duration-700 ease-out"
               :class="revealedBeats.has(index) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'"
               :style="{ transitionDelay: `${index * 120}ms` }"
             >
-              <!-- Timeline dot -->
+              <!-- Timeline dot — visible on all screens -->
               <div 
-                class="absolute left-3 sm:left-5 top-8 w-4 h-4 rounded-full hidden sm:block z-10 transition-all duration-500"
+                class="absolute left-1 sm:left-5 top-8 w-4 h-4 rounded-full z-10 transition-all duration-500"
                 :class="revealedBeats.has(index) ? 'scale-100' : 'scale-0'"
                 style="background-color: var(--accent-cyan); box-shadow: 0 0 0 4px var(--bg-secondary), 0 0 20px rgba(34, 211, 238, 0.4);"
               >
@@ -160,32 +166,32 @@ onMounted(() => {
                   style="background: linear-gradient(90deg, var(--accent-cyan), transparent 80%);"
                 ></div>
 
-                <div class="p-5 sm:p-7">
+                <div class="p-4 sm:p-7">
                   <!-- Header row -->
-                  <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
-                    <div class="flex items-start gap-4">
+                  <div class="flex flex-col gap-3 mb-4">
+                    <div class="flex items-start gap-3 sm:gap-4">
                       <!-- Icon with glow background -->
                       <div 
-                        class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 transition-transform duration-300 group-hover:scale-110"
+                        class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-xl sm:text-2xl shrink-0 transition-transform duration-300 group-hover:scale-110"
                         style="background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(34, 211, 238, 0.05)); border: 1px solid rgba(34, 211, 238, 0.2);"
                       >
                         {{ exp.icon }}
                       </div>
-                      <div>
-                        <h3 class="text-lg sm:text-xl font-bold leading-tight" style="color: var(--text-primary);">
+                      <div class="flex-1 min-w-0">
+                        <h3 class="text-base sm:text-xl font-bold leading-tight" style="color: var(--text-primary);">
                           {{ exp.role }}
                         </h3>
                         <div class="flex items-center gap-2 mt-1">
                           <svg class="w-3.5 h-3.5 shrink-0" style="color: var(--accent-cyan);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                           </svg>
-                          <span class="text-sm font-medium" style="color: var(--accent-cyan);">{{ exp.company }}</span>
+                          <span class="text-xs sm:text-sm font-medium truncate" style="color: var(--accent-cyan);">{{ exp.company }}</span>
                         </div>
                       </div>
                     </div>
 
                     <!-- Period & type badges -->
-                    <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap shrink-0">
+                    <div class="flex items-center gap-2 flex-wrap">
                       <span 
                         class="px-3 py-1 text-xs rounded-full font-semibold whitespace-nowrap"
                         :style="{ 
@@ -202,15 +208,15 @@ onMounted(() => {
                   </div>
 
                   <!-- Description bullets -->
-                  <ul class="space-y-2.5 mb-5">
+                  <ul class="space-y-2 sm:space-y-2.5 mb-4 sm:mb-5">
                     <li 
                       v-for="(item, idx) in exp.description" 
                       :key="idx"
-                      class="flex items-start gap-3 text-sm leading-relaxed"
+                      class="flex items-start gap-2.5 sm:gap-3 text-xs sm:text-sm leading-relaxed"
                       style="color: var(--text-secondary);"
                     >
                       <span 
-                        class="w-1.5 h-1.5 rounded-full mt-2 shrink-0"
+                        class="w-1.5 h-1.5 rounded-full mt-1.5 sm:mt-2 shrink-0"
                         style="background-color: var(--accent-cyan);"
                       ></span>
                       <span>{{ item }}</span>
@@ -218,11 +224,11 @@ onMounted(() => {
                   </ul>
 
                   <!-- Tech stack footer -->
-                  <div class="pt-4 flex flex-wrap gap-2" style="border-top: 1px solid var(--border);">
+                  <div class="pt-3 sm:pt-4 flex flex-wrap gap-1.5 sm:gap-2" style="border-top: 1px solid var(--border);">
                     <span 
                       v-for="tech in exp.technologies" 
                       :key="tech"
-                      class="px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 hover:scale-105 cursor-default"
+                      class="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[0.65rem] sm:text-xs font-medium transition-all duration-300 hover:scale-105 cursor-default"
                       style="background: rgba(34, 211, 238, 0.1); color: var(--accent-cyan); border: 1px solid rgba(34, 211, 238, 0.2);"
                     >
                       {{ tech }}
