@@ -34,71 +34,199 @@ const skills = [
   { name: 'Docker', category: 'tools' },
   { name: 'Git', category: 'tools' },
 ]
+
+// Scroll reveal for child elements
+const beatRef = ref<HTMLElement | null>(null)
+const isRevealed = ref(false)
+
+onMounted(() => {
+  if (!beatRef.value) return
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          isRevealed.value = true
+        }
+      })
+    },
+    { rootMargin: '-10% 0px -20% 0px', threshold: 0.1 }
+  )
+  observer.observe(beatRef.value)
+})
 </script>
 
 <template>
-  <section id="about" class="section transition-all duration-500" style="background-color: var(--bg-secondary);">
-    <div class="section-container">
-      <SectionTitle 
-        title="About & Skills" 
-        subtitle="Get to know me better"
-      />
-
-      <div class="space-y-8 max-w-4xl mx-auto">
-        <!-- Achievements Card -->
-        <div class="card p-4 sm:p-6 animate-slide-up">
-          <div class="flex items-center gap-3 mb-6">
-            <span class="text-2xl">🏆</span>
-            <h3 class="text-xl font-semibold" style="color: #fbbf24;">Achievements</h3>
+  <section id="about" ref="beatRef" class="story-beat transition-all duration-500" style="background-color: var(--bg-secondary);">
+    <div class="scroll-grid">
+      <!-- Story Beat Header -->
+      <div class="max-w-5xl mx-auto">
+        <div 
+          class="scroll-reveal scroll-stagger-1" 
+          :class="{ 'scroll-revealed': isRevealed }"
+        >
+          <div class="chapter-badge">
+            <span>01</span>
+            <span style="opacity: 0.4;">—</span>
+            <span>About Me</span>
           </div>
-          <ul class="space-y-3">
-            <li 
-              v-for="(achievement, index) in achievements" 
-              :key="index"
-              class="flex items-start gap-3"
-            >
-              <span class="w-2 h-2 rounded-full mt-2 shrink-0" style="background-color: var(--accent);"></span>
-              <span style="color: var(--text-secondary);">{{ achievement }}</span>
-            </li>
-          </ul>
+          <h2 class="beat-title">Get to know me better</h2>
+          <p class="beat-body">
+            A passionate developer and designer shaping digital experiences through code and creativity.
+          </p>
         </div>
 
-        <!-- Organizational Experience Card -->
-        <div class="card p-4 sm:p-6 animate-slide-up animate-delay-100">
-          <div class="flex items-center gap-3 mb-6">
-            <span class="text-2xl">🎖️</span>
-            <h3 class="text-xl font-semibold" style="color: #a3e635;">Organizational Experience</h3>
+        <!-- Row 1: Achievements (left) + Skills & Stats (right) -->
+        <div class="grid lg:grid-cols-5 gap-5 mt-8">
+          <!-- Achievements Card — spans 3 cols -->
+          <div 
+            class="lg:col-span-3 card card-enhanced p-5 sm:p-6 scroll-reveal scroll-stagger-2"
+            :class="{ 'scroll-revealed': isRevealed }"
+          >
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(251, 191, 36, 0.05)); border: 1px solid rgba(251, 191, 36, 0.2);">
+                🏆
+              </div>
+              <h3 class="text-lg font-bold" style="color: #fbbf24;">Achievements</h3>
+            </div>
+            <ul class="space-y-3">
+              <li 
+                v-for="(achievement, index) in achievements" 
+                :key="index"
+                class="flex items-start gap-3"
+              >
+                <span class="w-1.5 h-1.5 rounded-full mt-2.5 shrink-0" style="background-color: var(--accent);"></span>
+                <span class="text-sm leading-relaxed" style="color: var(--text-secondary);">{{ achievement }}</span>
+              </li>
+            </ul>
           </div>
-          <div class="space-y-6">
-            <div v-for="(exp, index) in organizationalExperiences" :key="index">
-              <h4 class="font-semibold text-lg" style="color: var(--text-primary);">
-                {{ exp.title }} - {{ exp.organization }}
-              </h4>
-              <p class="text-sm mt-1 mb-3" style="color: var(--text-muted);">
-                {{ exp.period }}
-              </p>
-              <p class="leading-relaxed" style="color: var(--text-secondary);">
-                {{ exp.description }}
-              </p>
+
+          <!-- Skills + Stats Card — spans 2 cols -->
+          <div 
+            class="lg:col-span-2 scroll-reveal scroll-stagger-3"
+            :class="{ 'scroll-revealed': isRevealed }"
+          >
+            <div class="card card-enhanced p-5 sm:p-6 h-full flex flex-col">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style="background: linear-gradient(135deg, var(--accent-glow), transparent); border: 1px solid var(--border);">
+                  💡
+                </div>
+                <h3 class="text-lg font-bold" style="color: var(--accent);">Skills & Competencies</h3>
+              </div>
+
+              <!-- Skill Categories — compact -->
+              <div class="space-y-3 flex-1">
+                <div>
+                  <p class="text-xs uppercase tracking-wider font-semibold mb-1.5" style="color: #60a5fa;">Frontend</p>
+                  <div class="flex flex-wrap gap-1.5">
+                    <span 
+                      v-for="skill in skills.filter(s => s.category === 'frontend')" 
+                      :key="skill.name"
+                      class="px-2.5 py-1 rounded-full text-xs font-medium transition-all hover:scale-105 cursor-default border skill-frontend"
+                    >
+                      {{ skill.name }}
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <p class="text-xs uppercase tracking-wider font-semibold mb-1.5" style="color: #22c55e;">Backend</p>
+                  <div class="flex flex-wrap gap-1.5">
+                    <span 
+                      v-for="skill in skills.filter(s => s.category === 'backend')" 
+                      :key="skill.name"
+                      class="px-2.5 py-1 rounded-full text-xs font-medium transition-all hover:scale-105 cursor-default border skill-backend"
+                    >
+                      {{ skill.name }}
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <p class="text-xs uppercase tracking-wider font-semibold mb-1.5" style="color: #fb923c;">Database</p>
+                  <div class="flex flex-wrap gap-1.5">
+                    <span 
+                      v-for="skill in skills.filter(s => s.category === 'database')" 
+                      :key="skill.name"
+                      class="px-2.5 py-1 rounded-full text-xs font-medium transition-all hover:scale-105 cursor-default border skill-database"
+                    >
+                      {{ skill.name }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="flex gap-6">
+                  <div>
+                    <p class="text-xs uppercase tracking-wider font-semibold mb-1.5" style="color: #a855f7;">Design</p>
+                    <div class="flex flex-wrap gap-1.5">
+                      <span 
+                        v-for="skill in skills.filter(s => s.category === 'design')" 
+                        :key="skill.name"
+                        class="px-2.5 py-1 rounded-full text-xs font-medium transition-all hover:scale-105 cursor-default border skill-design"
+                      >
+                        {{ skill.name }}
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <p class="text-xs uppercase tracking-wider font-semibold mb-1.5" style="color: #9ca3af;">Tools</p>
+                    <div class="flex flex-wrap gap-1.5">
+                      <span 
+                        v-for="skill in skills.filter(s => s.category === 'tools')" 
+                        :key="skill.name"
+                        class="px-2.5 py-1 rounded-full text-xs font-medium transition-all hover:scale-105 cursor-default border skill-tools"
+                      >
+                        {{ skill.name }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick Stats -->
+              <div class="grid grid-cols-2 gap-2.5 pt-4 mt-4" style="border-top: 1px solid var(--border);">
+                <div class="text-center p-2.5 rounded-xl" style="background: rgba(99, 102, 241, 0.06); border: 1px solid var(--border);">
+                  <p class="text-xl font-bold" style="color: var(--accent);">11+</p>
+                  <p class="text-xs" style="color: var(--text-muted);">Technologies</p>
+                </div>
+                <div class="text-center p-2.5 rounded-xl" style="background: rgba(34, 211, 238, 0.06); border: 1px solid var(--border);">
+                  <p class="text-xl font-bold" style="color: var(--accent-cyan);">1+</p>
+                  <p class="text-xs" style="color: var(--text-muted);">Years Experience</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Skills & Competencies Card -->
-        <div class="card p-4 sm:p-6 animate-slide-up animate-delay-200">
-          <div class="flex items-center gap-3 mb-6">
-            <span class="text-2xl">💡</span>
-            <h3 class="text-xl font-semibold" style="color: var(--accent);">Skills & Competencies</h3>
+        <!-- Row 2: Organizational Experience — full width, 2-col grid -->
+        <div 
+          class="mt-5 card card-enhanced p-5 sm:p-6 scroll-reveal scroll-stagger-4"
+          :class="{ 'scroll-revealed': isRevealed }"
+        >
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style="background: linear-gradient(135deg, rgba(163, 230, 53, 0.2), rgba(163, 230, 53, 0.05)); border: 1px solid rgba(163, 230, 53, 0.2);">
+              🎖️
+            </div>
+            <h3 class="text-lg font-bold" style="color: #a3e635;">Organizational Experience</h3>
           </div>
-          <div class="flex flex-wrap gap-3">
-            <span 
-              v-for="skill in skills" 
-              :key="skill.name"
-              class="px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105 cursor-default border"
-              :class="`skill-${skill.category}`"
+          <div class="grid md:grid-cols-2 gap-5">
+            <div 
+              v-for="(exp, index) in organizationalExperiences" 
+              :key="index"
+              class="p-4 rounded-xl transition-colors"
+              style="background: var(--bg-secondary); border: 1px solid var(--border);"
             >
-              {{ skill.name }}
-            </span>
+              <h4 class="font-semibold" style="color: var(--text-primary);">
+                {{ exp.title }}
+              </h4>
+              <div class="flex items-center gap-2 mt-1 mb-2">
+                <span class="text-sm font-medium" style="color: var(--accent);">{{ exp.organization }}</span>
+                <span style="color: var(--text-muted);">·</span>
+                <span class="text-xs" style="color: var(--text-muted);">{{ exp.period }}</span>
+              </div>
+              <p class="text-sm leading-relaxed" style="color: var(--text-secondary);">
+                {{ exp.description }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
