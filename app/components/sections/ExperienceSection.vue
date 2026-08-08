@@ -140,7 +140,7 @@ onUnmounted(() => {
           <div class="experience-image"><img :src="experience.image" :alt="experience.company" draggable="false" /><span class="experience-index">{{ String(index + 1).padStart(2, '0') }}</span></div>
         </article>
       </div>
-      <div class="experience-progress"><span>SCROLL TO EXPLORE</span><span>{{ String(currentCardIndex).padStart(2, '0') }} / {{ String(experiences.length).padStart(2, '0') }}</span></div>
+      <div class="experience-progress"><span class="experience-scroll-hint" :class="{ 'is-finished': scrollProgress >= 0.999 }"><i aria-hidden="true">&rarr;</i> DRAG TO EXPLORE</span><span>{{ String(currentCardIndex).padStart(2, '0') }} / {{ String(experiences.length).padStart(2, '0') }}</span></div>
     </div>
   </section>
 </template>

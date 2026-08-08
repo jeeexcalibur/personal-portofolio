@@ -1174,3 +1174,31 @@
     text-align: left;
   }
 }
+/* Experience — scroll hint */
+.experience-scroll-hint {
+  align-items: center;
+  display: inline-flex;
+  gap: 10px;
+  opacity: 0.75;
+  transition: opacity 0.3s ease;
+}
+.experience-scroll-hint i {
+  animation: experience-hint-slide 1.6s ease-in-out infinite;
+  display: inline-block;
+  font-style: normal;
+}
+.experience-scroll-hint.is-finished {
+  opacity: 0.35;
+}
+.experience-scroll-hint.is-finished i {
+  animation: none;
+}
+@keyframes experience-hint-slide {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+}
+@media (max-width: 800px) {
+  .experience-scroll-hint {
+    display: none;
+  }
+}
