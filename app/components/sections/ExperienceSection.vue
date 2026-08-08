@@ -59,6 +59,12 @@ onMounted(() => {
   if (isMobile.value) {
     gsap.set(rail, { clearProps: 'transform' })
     gsap.set(rail, { opacity: 1, filter: 'none' })
+    const updateMobileProgress = () => {
+      const maxScroll = rail.scrollWidth - rail.clientWidth
+      scrollProgress.value = maxScroll > 0 ? Math.min(Math.max(rail.scrollLeft / maxScroll, 0), 1) : 1
+    }
+    updateMobileProgress()
+    rail.addEventListener('scroll', updateMobileProgress, { passive: true })
     return
   }
 
@@ -140,7 +146,7 @@ onUnmounted(() => {
           <div class="experience-image"><img :src="experience.image" :alt="experience.company" draggable="false" /><span class="experience-index">{{ String(index + 1).padStart(2, '0') }}</span></div>
         </article>
       </div>
-      <div class="experience-progress"><span class="experience-scroll-hint" :class="{ 'is-finished': scrollProgress >= 0.999 }"><i aria-hidden="true">&rarr;</i> DRAG TO EXPLORE</span><span>{{ String(currentCardIndex).padStart(2, '0') }} / {{ String(experiences.length).padStart(2, '0') }}</span></div>
+      <div class="experience-progress"><span class="experience-scroll-hint" :class="{ 'is-finished': scrollProgress >= 0.999 }"><i aria-hidden="true">&rarr;</i> DRAG TO EXPLORE</span><span class="experience-swipe-hint" :class="{ 'is-finished': scrollProgress >= 0.999 }"><i aria-hidden="true">&larr;</i> SWIPE <i aria-hidden="true">&rarr;</i></span><span>{{ String(currentCardIndex).padStart(2, '0') }} / {{ String(experiences.length).padStart(2, '0') }}</span></div>
     </div>
   </section>
 </template>

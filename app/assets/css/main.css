@@ -1202,3 +1202,24 @@
     display: none;
   }
 }
+/* Experience — mobile swipe hint */
+@media (max-width: 800px) {
+  .experience-swipe-hint {
+    align-items: center;
+    animation: experience-swipe-hint 1.6s ease-in-out infinite;
+    display: inline-flex;
+    gap: 8px;
+    opacity: 0.85;
+  }
+  .experience-swipe-hint i {
+    font-style: normal;
+  }
+  .experience-swipe-hint.is-finished {
+    animation: none;
+    opacity: 0.3;
+  }
+}
+@keyframes experience-swipe-hint {
+  0%, 100% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+}
