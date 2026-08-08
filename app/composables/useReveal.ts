@@ -16,11 +16,19 @@
     })
   }, defaultOptions)
 
-  const targets = document.querySelectorAll('.reveal')
-  targets.forEach((target) => observer.observe(target))
+  const observe = (target: Element) => {
+    if (target.classList.contains('is-visible')) return
+    observer.observe(target)
+  }
+
+  const refresh = () => {
+    document.querySelectorAll('.reveal').forEach(observe)
+  }
+
+  refresh()
 
   const stop = () => observer.disconnect()
   onBeforeUnmount(stop)
 
-  return { observer, stop }
+  return { observer, refresh, stop }
 }

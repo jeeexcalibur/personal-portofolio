@@ -1,9 +1,10 @@
 ﻿<script setup lang="ts">
 import { projects } from '~/data/portfolio'
 
-onMounted(() => useReveal())
+const reveal = useReveal()
 
 const showAll = ref(false)
+watch(showAll, () => reveal?.refresh(), { flush: 'post' })
 const displayedProjects = computed(() => showAll.value ? projects : projects.slice(0, 3))
 const projectPath = (title: string) => `/projects/${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`
 </script>
