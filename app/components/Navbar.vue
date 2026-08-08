@@ -1,209 +1,304 @@
-<script setup lang="ts">
-const { isDark, toggleTheme, initTheme } = useTheme()
+﻿<script setup lang="ts">
 const isOpen = ref(false)
-const activeSection = ref('home')
-const scrollProgress = ref(0)
-const isScrolled = ref(false)
-
-const navLinks = [
-  { name: 'Home', href: '#home' },
-  { name: 'About', href: '#about' },
-  { name: 'Education', href: '#education' },
-  { name: 'Experience', href: '#experience' },
-  { name: 'Projects', href: '#projects' },
+const links = [
+  { number: '01', label: 'Home', href: '/#home' },
+  { number: '02', label: 'About', href: '/#about' },
+  { number: '03', label: 'Education', href: '/#education' },
+  { number: '04', label: 'Experience', href: '/#experience' },
+  { number: '05', label: 'Projects', href: '/#projects' },
+  { number: '06', label: 'Contact', href: '/#contact' }
 ]
 
-onMounted(() => {
-  initTheme()
-  
-  // Set up IntersectionObserver for scroll-based active section detection
-  const sectionIds = ['home', 'about', 'education', 'experience', 'projects', 'contact']
-  
-  const observerOptions = {
-    root: null,
-    rootMargin: '-20% 0px -70% 0px', // Trigger when section is in the upper portion of viewport
-    threshold: 0
+const navigateToSection = async (href: string) => {
+  closeMenu()
+
+  if (!import.meta.client) return
+
+  const target = new URL(href, window.location.origin)
+  if (window.location.pathname !== target.pathname) {
+    await navigateTo(target.pathname + target.hash)
+    return
   }
-  
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        activeSection.value = entry.target.id
-      }
-    })
-  }, observerOptions)
-  
-  // Observe all sections
-  sectionIds.forEach((id) => {
-    const section = document.getElementById(id)
-    if (section) {
-      observer.observe(section)
-    }
-  })
-  
-  // Scroll progress tracking
-  const handleScroll = () => {
-    const scrollTop = window.scrollY
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight
-    scrollProgress.value = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0
-    isScrolled.value = scrollTop > 20
-  }
-  
-  window.addEventListener('scroll', handleScroll, { passive: true })
+
+  await nextTick()
+  document.querySelector(target.hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  window.history.replaceState(null, '', target.pathname + target.hash)
+}
+
+const closeMenu = () => {
+  isOpen.value = false
+}
+
+const handleKeydown = (event: KeyboardEvent) => {
+  if (event.key === 'Escape') closeMenu()
+}
+
+watch(isOpen, (open) => {
+  if (!import.meta.client) return
+  document.body.style.overflow = open ? 'hidden' : ''
 })
 
-const scrollToSection = (href: string) => {
-  isOpen.value = false
-  const element = document.querySelector(href)
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth' })
-  }
-}
-
-const scrollToContact = () => {
-  document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })
-}
-
-const isActive = (href: string) => {
-  return activeSection.value === href.replace('#', '')
-}
+onMounted(() => window.addEventListener('keydown', handleKeydown))
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeydown)
+  if (import.meta.client) document.body.style.overflow = ''
+})
 </script>
 
 <template>
-  <!-- Scroll Progress Bar -->
-  <div 
-    class="scroll-progress"
-    :style="{ width: `${scrollProgress}%` }"
-  ></div>
+  <header class="site-nav" :class="{ 'site-nav-open': isOpen }">
+    <div class="nav-left">
+      <NuxtLink to="/#home" class="nav-mark" aria-label="Jein Ananda home" @click="closeMenu">JA.</NuxtLink>
 
-  <nav 
-    class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-    :style="{ 
-      backgroundColor: isScrolled ? 'var(--bg-primary)' : 'transparent',
-      borderBottom: isScrolled ? '1px solid var(--border)' : 'none',
-      backdropFilter: isScrolled ? 'blur(12px)' : 'blur(4px)'
-    }"
-  >
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
-        <!-- Logo -->
-<a href="#home" class="text-2xl font-bold tracking-tighter" tabindex="0" style="transform: none; color: var(--accent);">JA<span style="color: var(--text-primary);">.</span></a>
+    </div>
+    <button type="button" class="nav-menu" :aria-expanded="isOpen" aria-controls="site-menu" @click="isOpen = !isOpen">
+      {{ isOpen ? 'CLOSE' : 'MENU' }} <i>{{ isOpen ? '×' : '+' }}</i>
+    </button>
+  </header>
 
-        <!-- Desktop Navigation -->
-        <div class="hidden md:flex items-center space-x-8">
-          <a
-            v-for="link in navLinks"
-            :key="link.name"
-            :href="link.href"
-            @click.prevent="scrollToSection(link.href)"
-            class="font-medium transition-all duration-300 hover:scale-105 relative py-2"
-            :class="{ 'nav-link-active': isActive(link.href) }"
-            :style="{ color: isActive(link.href) ? 'var(--accent)' : 'var(--text-secondary)' }"
-          >
-            {{ link.name }}
-          </a>
+  <Transition name="menu-fade">
+    <div v-if="isOpen" id="site-menu" class="editorial-menu" role="dialog" aria-modal="true" aria-label="Site navigation" @click.self="closeMenu">
+      <div class="editorial-menu-inner">
+        <div class="editorial-menu-heading">
+          <p class="editorial-menu-kicker">NAVIGATION</p>
+          <p class="editorial-menu-note">A small map of the work, experience, and details behind this portfolio.</p>
         </div>
 
-        <div class="hidden md:flex items-center gap-3">
-          <!-- Theme Toggle -->
-          <button 
-            @click="toggleTheme"
-            class="theme-toggle"
-            aria-label="Toggle theme"
-          >
-            <!-- Sun Icon (for dark mode) -->
-            <svg v-if="isDark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-            <!-- Moon Icon (for light mode) -->
-            <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-            </svg>
-          </button>
+        <div class="editorial-menu-content">
+          <nav class="editorial-menu-links" aria-label="Main navigation">
+            <a v-for="link in links" :key="link.label" :href="link.href" class="editorial-menu-link" @click.prevent="navigateToSection(link.href)">
+              <span>{{ link.number }}</span>
+              <strong>{{ link.label }}</strong>
+              <i>↗</i>
+            </a>
+          </nav>
 
-          <!-- Contact Button -->
-          <button 
-            @click="scrollToContact"
-            class="btn btn-primary !py-2.5 !px-5 !text-sm"
-          >
-            Contact me
-          </button>
+          <aside class="editorial-menu-aside">
+            <div class="editorial-menu-status"><span></span> AVAILABLE FOR OPPORTUNITIES</div>
+            <p>Balikpapan · Indonesia</p>
+            <div class="editorial-menu-socials">
+              <a href="https://github.com/jeeexcalibur" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+              <a href="https://www.linkedin.com/in/jein-ananda-36a05b2b0/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+              <a href="mailto:hello@jeinananda.com">Email ↗</a>
+            </div>
+          </aside>
         </div>
 
-        <!-- Mobile Menu Button -->
-        <div class="md:hidden flex items-center gap-2">
-          <button 
-            @click="toggleTheme"
-            class="theme-toggle !w-10 !h-10"
-            aria-label="Toggle theme"
-          >
-            <svg v-if="isDark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-            <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-            </svg>
-          </button>
-          <button
-            @click="isOpen = !isOpen"
-            class="p-2 transition-colors"
-            style="color: var(--text-secondary);"
-            aria-label="Toggle menu"
-          >
-            <svg v-if="!isOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-            <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
+        <div class="editorial-menu-footer"><span>JEIN / PORTFOLIO</span><span>© {{ new Date().getFullYear() }}</span></div>
       </div>
     </div>
-
-    <!-- Mobile Menu -->
-    <Transition
-      enter-active-class="transition duration-200 ease-out"
-      enter-from-class="opacity-0 -translate-y-2"
-      enter-to-class="opacity-100 translate-y-0"
-      leave-active-class="transition duration-150 ease-in"
-      leave-from-class="opacity-100 translate-y-0"
-      leave-to-class="opacity-0 -translate-y-2"
-    >
-      <div v-if="isOpen" class="md:hidden" style="background: var(--bg-card); border-top: 1px solid var(--border); box-shadow: 0 20px 60px var(--shadow-lg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
-        <!-- Gradient accent line at top -->
-        <div class="h-0.5" style="background: linear-gradient(90deg, var(--accent), var(--accent-cyan), transparent);"></div>
-        <div class="px-5 py-5 space-y-1">
-          <a
-            v-for="link in navLinks"
-            :key="link.name"
-            :href="link.href"
-            @click.prevent="scrollToSection(link.href)"
-            class="flex items-center gap-3 py-3 px-4 rounded-xl font-medium transition-all duration-200"
-            :style="{ 
-              color: isActive(link.href) ? 'var(--accent)' : 'var(--text-secondary)',
-              backgroundColor: isActive(link.href) ? 'var(--accent-glow)' : 'transparent',
-              borderLeft: isActive(link.href) ? '3px solid var(--accent)' : '3px solid transparent'
-            }"
-          >
-            {{ link.name }}
-            <!-- Active indicator dot -->
-            <span 
-              v-if="isActive(link.href)"
-              class="w-1.5 h-1.5 rounded-full ml-auto"
-              style="background-color: var(--accent); box-shadow: 0 0 8px var(--accent-glow);"
-            ></span>
-          </a>
-          <!-- Divider with gradient -->
-          <div class="h-px mx-2 my-3" style="background: linear-gradient(90deg, transparent, var(--border), transparent);"></div>
-          <button 
-            @click="scrollToContact"
-            class="w-full btn btn-primary !py-2.5 mt-2"
-          >
-            Contact me
-          </button>
-        </div>
-      </div>
-    </Transition>
-  </nav>
+  </Transition>
 </template>
+
+<style scoped>
+.site-nav-open {
+  z-index: 1002;
+}
+
+.editorial-menu {
+  background: var(--ink, #151515);
+  color: var(--paper, #e9e9e6);
+  inset: 0;
+  overflow-y: auto;
+  position: fixed;
+  z-index: 1001;
+}
+
+.editorial-menu-inner {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 150px clamp(24px, 7vw, 110px) 32px;
+}
+
+.editorial-menu-heading {
+  align-items: end;
+  border-bottom: 1px solid rgba(233, 233, 230, 0.2);
+  display: flex;
+  gap: 40px;
+  justify-content: space-between;
+  padding-bottom: 24px;
+}
+
+.editorial-menu-kicker {
+  color: rgba(233, 233, 230, 0.62);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .28em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.editorial-menu-note {
+  color: rgba(233, 233, 230, 0.58);
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 270px;
+}
+
+.editorial-menu-content {
+  display: grid;
+  flex: 1;
+  gap: 8vw;
+  grid-template-columns: minmax(0, 1fr) 230px;
+  padding: 46px 0 70px;
+}
+
+.editorial-menu-links {
+  align-self: start;
+  display: grid;
+}
+
+.editorial-menu-link {
+  align-items: center;
+  border-bottom: 1px solid rgba(233, 233, 230, 0.2);
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 48px 1fr 40px;
+  padding: 18px 0;
+  text-decoration: none;
+  transition: color .2s ease, padding-left .2s ease;
+}
+
+.editorial-menu-link:first-child {
+  border-top: 1px solid rgba(233, 233, 230, 0.2);
+}
+
+.editorial-menu-link span {
+  color: rgba(233, 233, 230, 0.45);
+  font-size: 11px;
+  letter-spacing: .16em;
+}
+
+.editorial-menu-link strong {
+  font-size: clamp(38px, 6vw, 84px);
+  font-weight: 500;
+  letter-spacing: -.07em;
+  line-height: .95;
+}
+
+.editorial-menu-link i {
+  color: rgba(233, 233, 230, 0.5);
+  font-size: 20px;
+  font-style: normal;
+  text-align: right;
+  transition: color .2s ease, transform .2s ease;
+}
+
+.editorial-menu-link:hover {
+  color: var(--paper, #e9e9e6);
+  padding-left: 12px;
+}
+
+.editorial-menu-link:hover i {
+  color: var(--paper, #e9e9e6);
+  transform: translate(4px, -4px);
+}
+
+.editorial-menu-aside {
+  align-self: start;
+  border-left: 1px solid rgba(233, 233, 230, 0.2);
+  color: rgba(233, 233, 230, 0.62);
+  padding-left: 22px;
+}
+
+.editorial-menu-status {
+  align-items: center;
+  color: var(--paper, #e9e9e6);
+  display: flex;
+  font-size: 9px;
+  font-weight: 700;
+  gap: 8px;
+  letter-spacing: .16em;
+  line-height: 1.4;
+}
+
+.editorial-menu-status span {
+  background: #7d9b72;
+  border-radius: 50%;
+  display: block;
+  height: 7px;
+  width: 7px;
+}
+
+.editorial-menu-aside > p {
+  font-size: 14px;
+  margin: 18px 0 56px;
+}
+
+.editorial-menu-socials {
+  display: grid;
+  gap: 14px;
+}
+
+.editorial-menu-socials a {
+  border-bottom: 1px solid rgba(233, 233, 230, 0.2);
+  color: rgba(233, 233, 230, 0.7);
+  font-size: 12px;
+  padding-bottom: 10px;
+  text-decoration: none;
+}
+
+.editorial-menu-socials a:hover {
+  color: var(--paper, #e9e9e6);
+}
+
+.editorial-menu-footer {
+  border-top: 1px solid rgba(233, 233, 230, 0.2);
+  color: rgba(233, 233, 230, 0.45);
+  display: flex;
+  font-size: 9px;
+  justify-content: space-between;
+  letter-spacing: .2em;
+  padding-top: 18px;
+  text-transform: uppercase;
+}
+
+.menu-fade-enter-active,
+.menu-fade-leave-active {
+  transition: opacity .25s ease;
+}
+
+.menu-fade-enter-from,
+.menu-fade-leave-to {
+  opacity: 0;
+}
+
+@media (max-width: 700px) {
+  .editorial-menu-inner {
+    padding: 118px 20px 24px;
+  }
+
+  .editorial-menu-heading {
+    align-items: start;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .editorial-menu-content {
+    display: block;
+    padding: 34px 0 58px;
+  }
+
+  .editorial-menu-link {
+    gap: 12px;
+    grid-template-columns: 30px 1fr 24px;
+  }
+
+  .editorial-menu-link strong {
+    font-size: clamp(34px, 12vw, 58px);
+  }
+
+  .editorial-menu-aside {
+    border-left: 0;
+    border-top: 1px solid rgba(233, 233, 230, 0.2);
+    margin-top: 48px;
+    padding: 24px 0 0;
+  }
+
+  .editorial-menu-aside > p {
+    margin-bottom: 28px;
+  }
+}
+</style>

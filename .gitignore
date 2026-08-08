@@ -22,3 +22,8 @@ logs
 .env
 .env.*
 !.env.example
+
+# MD
+
+.PORTOFOLIO_HANDOFF.md
+immersive-narrative.md

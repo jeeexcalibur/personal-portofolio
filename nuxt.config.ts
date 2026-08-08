@@ -1,9 +1,20 @@
-import tailwindcss from "@tailwindcss/vite";
+﻿import tailwindcss from "@tailwindcss/vite";
 
 export default defineNuxtConfig({
+  srcDir: 'app',
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
-  css: ['./app/assets/css/main.css'],
+  css: ['~/assets/css/main.css'],
+
+  runtimeConfig: {
+    public: {
+      emailjs: {
+        serviceId: process.env.NUXT_PUBLIC_EMAILJS_SERVICE_ID || '',
+        templateId: process.env.NUXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'template_g7pjjmg',
+        publicKey: process.env.NUXT_PUBLIC_EMAILJS_PUBLIC_KEY || '',
+      },
+    },
+  },
 
   app: {
     head: {

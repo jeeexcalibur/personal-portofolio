@@ -1,4 +1,5 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
+onMounted(() => useReveal())
 const skillCategories = [
   {
     title: 'Frontend',
@@ -24,15 +25,15 @@ const skillCategories = [
 </script>
 
 <template>
-  <section id="skills" class="section">
-    <div class="section-container">
-      <SectionTitle 
+  <section id="skills" class="section reveal">
+    <div class="section-container" style="position:relative;z-index:1;">
+      <SectionTitle class="reveal" 
         title="Skills" 
         subtitle="Technologies and tools I work with"
       />
 
       <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <GlassCard v-for="category in skillCategories" :key="category.title" hoverable>
+        <GlassCard v-for="(category, index) in skillCategories" :key="category.title" class="reveal" :style="{ transitionDelay: `${index * 90}ms` }" hoverable>
           <div class="text-center mb-6">
             <span class="text-4xl mb-3 block">{{ category.icon }}</span>
             <h3 class="text-xl font-semibold text-text-primary">{{ category.title }}</h3>

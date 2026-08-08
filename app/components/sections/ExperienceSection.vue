@@ -1,245 +1,152 @@
-<script setup lang="ts">
-const experiences = [
-  {
-    company: 'Maybank',
-    role: 'IT Infrastructure Engineer',
-    period: 'Apr 2026 - Present',
-    type: 'Full-time',
-    current: true,
-    description: [
-      'Supported IT operations and troubleshooting for branch offices (KPNO), ensuring maximum uptime and reliability',
-      'Maintained IT infrastructure and monitored server room conditions, managing UPS, security systems, and routine backups',
-      'Performed hardware and software installations, including PCs, pinpads, operational systems, and core banking applications',
-      'Assisted in comprehensive IT infrastructure projects such as branch renovations, relocations, and network recabling'
-    ],
-    technologies: ['IT Infrastructure', 'System Admin', 'Hardware Config', 'Networking', 'Troubleshooting'],
-    icon: '🖥️',
-  },
-  {
-    company: 'PT Komatsu Remanufacturing Asia',
-    role: 'Web Developer Intern',
-    period: 'Jul 2025 - Dec 2025',
-    type: 'Internship',
-    current: false,
-    description: [
-      'Developed the web version of Employee Information System (EIS) using PHP Laravel to reach users without mobile access',
-      'Built responsive web interfaces mirroring mobile app functionality for Attendance, Reimbursement, and Time Management features',
-      'Collaborated with Agile teams, participating in Scrum ceremonies like daily stand-ups and sprint reviews',
-      'Supported the company\'s digitalization initiative by extending the EIS platform to web users'
-    ],
-    technologies: ['PHP', 'Laravel', 'MySQL', 'HTML', 'CSS', 'JavaScript', 'Agile'],
-    icon: '💻',
-  },
-  {
-    company: 'PT Komatsu Remanufacturing Asia',
-    role: 'UI/UX Design Intern',
-    period: 'Jan 2025 - Jun 2025',
-    type: 'Internship',
-    current: false,
-    description: [
-      'Designed mobile and web interfaces for Employee Information System (EIS) supporting 700+ employees across departments',
-      'Applied Design Sprint for Mobile and Lean UX methodologies for Website to iterate quickly on designs',
-      'Conducted stakeholder interviews and usability testing sessions to gather feedback and validate designs',
-      'Created user flows, wireframes, and high-fidelity prototypes using Figma'
-    ],
-    technologies: ['Figma', 'Design Sprint', 'Lean UX', 'Prototyping', 'User Research'],
-    icon: '🎨',
-  },
-  {
-    company: 'Kalimantan Institute of Technology',
-    role: 'Teaching Assistant',
-    period: 'Jan 2024 - Dec 2025',
-    type: 'Part-time',
-    current: false,
-    description: [
-      'Taught programming fundamentals across multiple courses: Basic Algorithm (Python), OOP (PHP), Web Dev (Laravel), and Cloud Computing (Docker)',
-      'Instructed networking concepts including IP addressing, subnetting, routing, and VLAN configuration using Cisco Packet Tracer',
-      'Guided students in Ubuntu Operating System, covering Linux commands and system management',
-      'Provided hands-on sessions, feedback on assignments, and conducted evaluations to monitor student progress'
-    ],
-    technologies: ['Python', 'JavaScript', 'PHP', 'Laravel', 'Docker', 'Cisco', 'Ubuntu'],
-    icon: '👨‍🏫',
-  }
-]
+﻿<script setup lang="ts">
+import { experiences } from '~/data/portfolio'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-const beatRef = ref<HTMLElement | null>(null)
-const isRevealed = ref(false)
-const revealedBeats = ref<Set<number>>(new Set())
+if (import.meta.client) {
+  gsap.registerPlugin(ScrollTrigger)
+}
+
+const sectionRef = ref<HTMLElement | null>(null)
+const railRef = ref<HTMLElement | null>(null)
+const isDragging = ref(false)
+const dragStartX = ref(0)
+const dragStartOffset = ref(0)
+const scrollProgress = ref(0)
+const isMobile = ref(false)
+
+const getTravel = () => {
+  if (!railRef.value) return 0
+  return Math.max(railRef.value.scrollWidth - window.innerWidth * 0.72, 0)
+}
+
+const currentCardIndex = computed(() => {
+  const travel = getTravel()
+  if (travel <= 0) return 1
+  const progress = Math.min(Math.max(scrollProgress.value, 0), 1)
+  return Math.min(Math.floor(progress * experiences.length) + 1, experiences.length)
+})
+
+const beginDrag = (event: PointerEvent) => {
+  if (isMobile.value) return
+  isDragging.value = true
+  dragStartX.value = event.clientX
+  const currentX = gsap.getProperty(railRef.value, 'x') as number
+  dragStartOffset.value = currentX
+  railRef.value?.setPointerCapture(event.pointerId)
+}
+
+const dragRail = (event: PointerEvent) => {
+  if (isMobile.value) return
+  if (!isDragging.value || !railRef.value) return
+  const travel = getTravel()
+  const delta = event.clientX - dragStartX.value
+  const newX = Math.min(Math.max(dragStartOffset.value + delta, -travel), 0)
+  gsap.set(railRef.value, { x: newX })
+}
+
+const endDrag = () => {
+  isDragging.value = false
+}
 
 onMounted(() => {
-  if (!beatRef.value) return
+  if (!sectionRef.value || !railRef.value) return
 
-  const sectionObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) isRevealed.value = true
-      })
-    },
-    { rootMargin: '-10% 0px -20% 0px', threshold: 0.1 }
+  const rail = railRef.value
+  const section = sectionRef.value
+  isMobile.value = window.matchMedia('(max-width: 800px)').matches
+
+  if (isMobile.value) {
+    gsap.set(rail, { clearProps: 'transform' })
+    gsap.set(rail, { opacity: 1, filter: 'none' })
+    return
+  }
+
+  // Background word reveal
+  gsap.fromTo('.experience-background-word',
+    { y: 30, opacity: 0.08, filter: 'blur(10px)' },
+    {
+      y: 0,
+      opacity: 0.045,
+      filter: 'blur(0px)',
+      scrollTrigger: { trigger: section, start: 'top bottom', end: 'top top+=20%', scrub: 0.5 }
+    }
   )
-  sectionObserver.observe(beatRef.value)
 
-  const beatObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const idx = Number((entry.target as HTMLElement).dataset.beatIdx)
-          revealedBeats.value = new Set([...revealedBeats.value, idx])
-        }
-      })
-    },
-    { rootMargin: '0px 0px -8% 0px', threshold: 0.12 }
+  // Rail reveal
+  gsap.fromTo(rail,
+    { y: 110, opacity: 0, filter: 'blur(7px)' },
+    {
+      y: 0,
+      opacity: 1,
+      filter: 'blur(0px)',
+      scrollTrigger: { trigger: section, start: 'top bottom', end: 'top top+=20%', scrub: 0.5 }
+    }
   )
 
-  beatRef.value.querySelectorAll('[data-beat-idx]').forEach((el) => {
-    beatObserver.observe(el)
+  // Pinned horizontal scroll
+  ScrollTrigger.create({
+    trigger: section,
+    start: 'top top',
+    end: () => `+=${getTravel() + window.innerHeight}`,
+    pin: true,
+    pinSpacing: true,
+    scrub: 1,
+    invalidateOnRefresh: true,
+    onUpdate: (self) => {
+      scrollProgress.value = self.progress
+      if (!isDragging.value) {
+        gsap.set(rail, { x: -getTravel() * self.progress })
+      }
+    }
+  })
+})
+
+onUnmounted(() => {
+  ScrollTrigger.getAll().forEach(trigger => {
+    if (trigger.vars.trigger === sectionRef.value) {
+      trigger.kill()
+    }
   })
 })
 </script>
 
 <template>
-  <section id="experience" ref="beatRef" class="story-beat transition-all duration-500 relative overflow-hidden" style="background-color: var(--bg-secondary);">
-    <!-- Ambient background scrim for depth -->
-    <div 
-      class="absolute inset-0 pointer-events-none"
-      style="background: radial-gradient(ellipse at 80% 20%, rgba(34, 211, 238, 0.06) 0%, transparent 50%), radial-gradient(ellipse at 20% 70%, rgba(99, 102, 241, 0.04) 0%, transparent 40%);"
-    ></div>
-    
-    <div class="scroll-grid relative z-10">
-      <div class="max-w-5xl mx-auto">
-        <!-- Section Header -->
-        <div 
-          class="scroll-reveal scroll-stagger-1" 
-          :class="{ 'scroll-revealed': isRevealed }"
-        >
-          <div class="chapter-badge">
-            <span>03</span>
-            <span style="opacity: 0.4;">—</span>
-            <span>Experience</span>
-          </div>
-          <h2 class="beat-title">My Professional Journey</h2>
-          <p class="beat-body">
-            A chronological look at my growth in the tech industry.
-          </p>
-        </div>
-
-        <!-- Timeline -->
-        <div class="relative mt-10">
-          <!-- Timeline vertical line — visible on all screens -->
-          <div 
-            class="absolute left-3 sm:left-7 top-0 bottom-0 w-px"
-            style="background: linear-gradient(180deg, var(--accent-cyan), rgba(34, 211, 238, 0.3), transparent);"
-          ></div>
-
-          <!-- Experience Cards -->
-          <div class="space-y-6 sm:space-y-8">
-            <div 
-              v-for="(exp, index) in experiences" 
-              :key="exp.role + exp.period"
-              :data-beat-idx="index"
-              class="relative pl-10 sm:pl-16 transition-all duration-700 ease-out"
-              :class="revealedBeats.has(index) ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'"
-              :style="{ transitionDelay: `${index * 120}ms` }"
-            >
-              <!-- Timeline dot — visible on all screens -->
-              <div 
-                class="absolute left-1 sm:left-5 top-8 w-4 h-4 rounded-full z-10 transition-all duration-500"
-                :class="revealedBeats.has(index) ? 'scale-100' : 'scale-0'"
-                style="background-color: var(--accent-cyan); box-shadow: 0 0 0 4px var(--bg-secondary), 0 0 20px rgba(34, 211, 238, 0.4);"
-              >
-                <!-- Pulse ring for current role -->
-                <div 
-                  v-if="exp.current"
-                  class="absolute inset-0 rounded-full animate-ping"
-                  style="background-color: var(--accent-cyan); opacity: 0.3;"
-                ></div>
-              </div>
-
-              <!-- Card -->
-              <div 
-                class="exp-card rounded-2xl overflow-hidden transition-all duration-400 group"
-                style="background: var(--bg-card); border: 1px solid var(--border);"
-              >
-                <!-- Gradient accent top bar -->
-                <div 
-                  class="h-1"
-                  style="background: linear-gradient(90deg, var(--accent-cyan), transparent 80%);"
-                ></div>
-
-                <div class="p-4 sm:p-7">
-                  <!-- Header row -->
-                  <div class="flex flex-col gap-3 mb-4">
-                    <div class="flex items-start gap-3 sm:gap-4">
-                      <!-- Icon with glow background -->
-                      <div 
-                        class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-xl sm:text-2xl shrink-0 transition-transform duration-300 group-hover:scale-110"
-                        style="background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(34, 211, 238, 0.05)); border: 1px solid rgba(34, 211, 238, 0.2);"
-                      >
-                        {{ exp.icon }}
-                      </div>
-                      <div class="flex-1 min-w-0">
-                        <h3 class="text-base sm:text-xl font-bold leading-tight" style="color: var(--text-primary);">
-                          {{ exp.role }}
-                        </h3>
-                        <div class="flex items-center gap-2 mt-1">
-                          <svg class="w-3.5 h-3.5 shrink-0" style="color: var(--accent-cyan);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                          </svg>
-                          <span class="text-xs sm:text-sm font-medium truncate" style="color: var(--accent-cyan);">{{ exp.company }}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Period & type badges -->
-                    <div class="flex items-center gap-2 flex-wrap">
-                      <span 
-                        class="px-3 py-1 text-xs rounded-full font-semibold whitespace-nowrap"
-                        :style="{ 
-                          background: exp.current ? 'rgba(34, 197, 94, 0.15)' : 'rgba(34, 211, 238, 0.12)',
-                          color: exp.current ? '#22c55e' : 'var(--accent-cyan)',
-                        }"
-                      >
-                        {{ exp.current ? '● ' : '' }}{{ exp.type }}
-                      </span>
-                      <span class="chapter-badge !mb-0 !text-[0.6rem] !py-0.5 whitespace-nowrap">
-                        {{ exp.period }}
-                      </span>
-                    </div>
-                  </div>
-
-                  <!-- Description bullets -->
-                  <ul class="space-y-2 sm:space-y-2.5 mb-4 sm:mb-5">
-                    <li 
-                      v-for="(item, idx) in exp.description" 
-                      :key="idx"
-                      class="flex items-start gap-2.5 sm:gap-3 text-xs sm:text-sm leading-relaxed"
-                      style="color: var(--text-secondary);"
-                    >
-                      <span 
-                        class="w-1.5 h-1.5 rounded-full mt-1.5 sm:mt-2 shrink-0"
-                        style="background-color: var(--accent-cyan);"
-                      ></span>
-                      <span>{{ item }}</span>
-                    </li>
-                  </ul>
-
-                  <!-- Tech stack footer -->
-                  <div class="pt-3 sm:pt-4 flex flex-wrap gap-1.5 sm:gap-2" style="border-top: 1px solid var(--border);">
-                    <span 
-                      v-for="tech in exp.technologies" 
-                      :key="tech"
-                      class="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[0.65rem] sm:text-xs font-medium transition-all duration-300 hover:scale-105 cursor-default"
-                      style="background: rgba(34, 211, 238, 0.1); color: var(--accent-cyan); border: 1px solid rgba(34, 211, 238, 0.2);"
-                    >
-                      {{ tech }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+  <section id="experience" ref="sectionRef" class="experience-section">
+    <div class="experience-sticky">
+      <div class="experience-background-word">EXPERIENCES</div>
+      <div class="section-head experience-heading">
+        <div><p class="section-kicker">CAREER ARCHIVE</p><h2>EXPERIENCES</h2></div>
+        <p>A chronological look at my growth in the tech industry.</p>
       </div>
+      <div
+        ref="railRef"
+        class="experience-rail"
+        :class="{ 'is-dragging': isDragging }"
+        @pointerdown="beginDrag"
+        @pointermove="dragRail"
+        @pointerup="endDrag"
+        @pointercancel="endDrag"
+        @pointerleave="endDrag"
+      >
+        <article v-for="(experience, index) in experiences" :key="experience.role" class="experience-card">
+          <div class="experience-info">
+            <div class="eyebrow">PROFESSIONAL EXPERIENCE <span class="tag-list"><span>{{ experience.type }}</span></span></div>
+            <h3>{{ experience.role }}</h3>
+            <p class="experience-company">{{ experience.company }}</p><p class="experience-period experience-period-visible">{{ experience.period }}</p>
+            <p class="experience-description">{{ experience.description }}</p>
+            <div class="experience-highlights"><div v-for="(highlight, highlightIndex) in experience.highlights" :key="highlight"><span>{{ String(highlightIndex + 1).padStart(2, '0') }}</span>{{ highlight }}</div></div>
+          </div>
+          <div class="experience-image"><img :src="experience.image" :alt="experience.company" draggable="false" /><span class="experience-index">{{ String(index + 1).padStart(2, '0') }}</span></div>
+        </article>
+      </div>
+      <div class="experience-progress"><span>SCROLL TO EXPLORE</span><span>{{ String(currentCardIndex).padStart(2, '0') }} / {{ String(experiences.length).padStart(2, '0') }}</span></div>
     </div>
   </section>
 </template>
+
+
+
+
+
+

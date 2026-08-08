@@ -1,25 +1,31 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import emailjs from '@emailjs/browser'
 
+onMounted(() => useReveal())
+
+const EMAILJS_SERVICE_ID = 'service_7vxaka8'
+const EMAILJS_TEMPLATE_ID = 'template_g7pjjmg'
+const EMAILJS_PUBLIC_KEY = 'qcpezEgoC_JEcApqd'
 const form = reactive({
   name: '',
   email: '',
   message: ''
 })
+const isSending = ref(false)
+const formStatus = ref<'idle' | 'success' | 'error'>('idle')
+const formMessage = ref('')
 
-const isSubmitting = ref(false)
-const isSubmitted = ref(false)
-const hasError = ref(false)
+const sendMessage = async () => {
+  formStatus.value = 'idle'
+  formMessage.value = ''
 
-// EmailJS credentials
-const EMAILJS_SERVICE_ID = 'service_7vxaka8'
-const EMAILJS_TEMPLATE_ID = 'template_g7pjjmg'
-const EMAILJS_PUBLIC_KEY = 'qcpezEgoC_JEcApqd'
+  if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
+    formStatus.value = 'error'
+    formMessage.value = 'Please complete all fields before sending.'
+    return
+  }
 
-const handleSubmit = async () => {
-  isSubmitting.value = true
-  hasError.value = false
-  
+  isSending.value = true
   try {
     await emailjs.send(
       EMAILJS_SERVICE_ID,
@@ -27,228 +33,246 @@ const handleSubmit = async () => {
       {
         from_name: form.name,
         from_email: form.email,
+        reply_to: form.email,
         message: form.message
       },
-      EMAILJS_PUBLIC_KEY
+      { publicKey: EMAILJS_PUBLIC_KEY }
     )
-    
-    isSubmitted.value = true
     form.name = ''
     form.email = ''
     form.message = ''
-    
-    setTimeout(() => {
-      isSubmitted.value = false
-    }, 5000)
-  } catch (error) {
-    console.error('EmailJS error:', error)
-    hasError.value = true
-    setTimeout(() => {
-      hasError.value = false
-    }, 5000)
+    formStatus.value = 'success'
+    formMessage.value = 'Message sent successfully. I will get back to you soon.'
+  } catch {
+    formStatus.value = 'error'
+    formMessage.value = 'Something went wrong. Please try emailing me directly.'
   } finally {
-    isSubmitting.value = false
+    isSending.value = false
   }
 }
-
-const contactInfo = [
-  {
-    icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
-    label: 'Email',
-    value: 'anandajein12@gmail.com',
-    href: 'mailto:anandajein12@gmail.com'
-  },
-  {
-    icon: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z',
-    label: 'Location',
-    value: 'Balikpapan, Indonesia',
-    href: null
-  }
-]
-
-const socialLinks = [
-  { name: 'GitHub', href: 'https://github.com/jeeexcalibur', icon: 'M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z' },
-  { name: 'LinkedIn', href: 'https://www.linkedin.com/in/jein-ananda-36a05b2b0/', icon: 'M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z' },
-  { name: 'Instagram', href: 'https://www.instagram.com/helvetica12_/', icon: 'M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z' }
-]
-
-const beatRef = ref<HTMLElement | null>(null)
-const isRevealed = ref(false)
-
-onMounted(() => {
-  if (!beatRef.value) return
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) isRevealed.value = true
-      })
-    },
-    { rootMargin: '-10% 0px -20% 0px', threshold: 0.1 }
-  )
-  observer.observe(beatRef.value)
-})
 </script>
 
 <template>
-  <section id="contact" ref="beatRef" class="story-beat transition-all duration-500" style="background-color: var(--bg-secondary);">
-    <!-- Background scrim for ambiance -->
-    <div class="scrim" style="opacity: 0.5;"></div>
-    
-    <div class="scroll-grid relative z-10">
-      <div class="max-w-5xl mx-auto">
-        <!-- Story Beat Header — centered (final beat) -->
-        <div class="text-center">
-          <div 
-            class="scroll-reveal scroll-stagger-1 flex flex-col items-center" 
-            :class="{ 'scroll-revealed': isRevealed }"
-          >
-            <div class="chapter-badge">
-              <span>05</span>
-              <span style="opacity: 0.4;">—</span>
-              <span>Contact</span>
-            </div>
-            <h2 class="beat-title">Let's Work Together</h2>
-            <p class="beat-body mx-auto text-center">
-              Have a project in mind? I'm always open to discussing new ideas, creative work, or opportunities.
-            </p>
-          </div>
+  <section id="contact" class="contact reveal">
+    <p class="contact-time reveal">GET IN TOUCH</p>
+    <p class="contact-time contact-location">BALIKPAPAN, ID / {{ new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }) }} WITA</p>
+    <br>
+    <p class="contact-intro reveal">Have a project in mind? Tell me a little about it and I’ll get back to you.</p>
+
+    <div class="contact-layout reveal">
+      <form class="contact-form reveal" @submit.prevent="sendMessage">
+        <label for="contact-name">NAME</label>
+        <input id="contact-name" v-model="form.name" name="name" type="text" placeholder="Your name" autocomplete="name" />
+
+        <label for="contact-email-input">EMAIL</label>
+        <input id="contact-email-input" v-model="form.email" name="email" type="email" placeholder="your@email.com" autocomplete="email" />
+
+        <label for="contact-message">MESSAGE</label>
+        <textarea id="contact-message" v-model="form.message" name="message" placeholder="Tell me about your project..." rows="5"></textarea>
+
+        <button type="submit" :disabled="isSending">
+          {{ isSending ? 'SENDING...' : 'SEND MESSAGE' }} <span aria-hidden="true">↗</span>
+        </button>
+        <p v-if="formMessage" class="contact-form-status" :class="`is-${formStatus}`" role="status">{{ formMessage }}</p>
+      </form>
+
+      <aside class="contact-information reveal">
+        <p class="contact-information-kicker">CONTACT INFORMATION</p>
+        <p class="contact-information-copy">Feel free to reach out. I’m open to discussing new projects, creative ideas, and opportunities.</p>
+        <a href="mailto:anandajein12@gmail.com" class="contact-detail"><span class="contact-detail-icon">@</span><span><small>EMAIL</small><strong>anandajein12@gmail.com</strong></span></a>
+        <div class="contact-detail"><span class="contact-detail-icon">⌖</span><span><small>LOCATION</small><strong>Balikpapan, Indonesia</strong></span></div>
+        <div class="contact-follow">
+          <small>FOLLOW ME</small>
+          <div class="contact-socials"><a href="https://github.com/jeeexcalibur" target="_blank" rel="noreferrer" aria-label="GitHub">GH</a><a href="https://www.linkedin.com/in/jein-ananda-36a05b2b0/" target="_blank" rel="noreferrer" aria-label="LinkedIn">in</a><a href="https://www.instagram.com/anandajein/" target="_blank" rel="noreferrer" aria-label="Instagram">◎</a></div>
         </div>
-
-        <div class="grid md:grid-cols-2 gap-8 lg:gap-12 mt-8">
-          <!-- Contact Form -->
-          <div 
-            class="card card-enhanced p-5 sm:p-6 md:p-8 scroll-reveal scroll-stagger-2"
-            :class="{ 'scroll-revealed': isRevealed }"
-          >
-            <form @submit.prevent="handleSubmit" class="space-y-5">
-              <div>
-                <label for="name" class="block text-sm font-semibold mb-2 transition-colors" style="color: var(--text-primary);">Name</label>
-                <input 
-                  id="name"
-                  v-model="form.name"
-                  type="text" 
-                  required
-                  placeholder="Your name"
-                  class="w-full transition-all"
-                />
-              </div>
-              <div>
-                <label for="email" class="block text-sm font-semibold mb-2 transition-colors" style="color: var(--text-primary);">Email</label>
-                <input 
-                  id="email"
-                  v-model="form.email"
-                  type="email" 
-                  required
-                  placeholder="your@email.com"
-                  class="w-full transition-all"
-                />
-              </div>
-              <div>
-                <label for="message" class="block text-sm font-semibold mb-2 transition-colors" style="color: var(--text-primary);">Message</label>
-                <textarea 
-                  id="message"
-                  v-model="form.message"
-                  rows="5" 
-                  required
-                  placeholder="Tell me about your project..."
-                  class="w-full resize-none transition-all"
-                ></textarea>
-              </div>
-              <button 
-                type="submit" 
-                class="cta-primary w-full justify-center"
-                :disabled="isSubmitting"
-              >
-                <svg v-if="isSubmitting" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span v-else>Send Message</span>
-              </button>
-              
-              <!-- Success Message -->
-              <Transition
-                enter-active-class="transition duration-300"
-                enter-from-class="opacity-0 translate-y-2"
-                enter-to-class="opacity-100 translate-y-0"
-              >
-                <div v-if="isSubmitted" class="p-4 rounded-xl text-center font-medium text-green-400" style="background-color: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2);">
-                  ✓ Message sent successfully!
-                </div>
-              </Transition>
-              
-              <!-- Error Message -->
-              <Transition
-                enter-active-class="transition duration-300"
-                enter-from-class="opacity-0 translate-y-2"
-                enter-to-class="opacity-100 translate-y-0"
-              >
-                <div v-if="hasError" class="p-4 rounded-xl text-center font-medium text-red-400" style="background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2);">
-                  ✕ Failed to send message. Please try again later.
-                </div>
-              </Transition>
-            </form>
-          </div>
-
-          <!-- Contact Info -->
-          <div 
-            class="space-y-6 scroll-reveal scroll-stagger-3"
-            :class="{ 'scroll-revealed': isRevealed }"
-          >
-            <div>
-              <h3 class="text-xl font-bold mb-3 transition-colors" style="color: var(--text-primary);">Contact Information</h3>
-              <p class="text-sm mb-6 leading-relaxed transition-colors" style="color: var(--text-secondary);">
-                Feel free to reach out! I'm always open to discussing new projects, creative ideas, or opportunities.
-              </p>
-            </div>
-
-            <div class="space-y-4">
-              <div 
-                v-for="info in contactInfo" 
-                :key="info.label"
-                class="flex items-start gap-4 group"
-              >
-                <div class="p-3 rounded-xl shrink-0 transition-all group-hover:scale-110" style="background-color: var(--accent-glow); border: 1px solid var(--border);">
-                  <svg class="w-5 h-5" style="color: var(--accent);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="info.icon" />
-                  </svg>
-                </div>
-                <div>
-                  <p class="text-xs uppercase tracking-wider font-semibold" style="color: var(--text-muted);">{{ info.label }}</p>
-                  <a 
-                    v-if="info.href" 
-                    :href="info.href"
-                    class="font-medium transition-colors hover:underline"
-                    style="color: var(--text-primary);"
-                  >
-                    {{ info.value }}
-                  </a>
-                  <p v-else class="font-medium transition-colors" style="color: var(--text-primary);">{{ info.value }}</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Social Links -->
-            <div class="pt-6" style="border-top: 1px solid var(--border);">
-              <p class="text-xs uppercase tracking-wider font-semibold mb-4" style="color: var(--text-muted);">Follow me</p>
-              <div class="flex gap-3">
-                <a 
-                  v-for="link in socialLinks"
-                  :key="link.name"
-                  :href="link.href" 
-                  target="_blank"
-                  class="social-link"
-                  :aria-label="link.name"
-                >
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path :d="link.icon" />
-                  </svg>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      </aside>
     </div>
+
+    <footer class="site-footer">© {{ new Date().getFullYear() }} JEIN ANANDA · ALL RIGHTS RESERVED.</footer>
   </section>
 </template>
+
+<style scoped>
+.contact-location {
+  margin-top: 14px;
+}
+.contact h2 {
+  margin-bottom: 28px;
+}
+.contact-intro {
+  color: #999;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 auto;
+  max-width: 430px;
+}
+.contact-layout {
+  align-items: start;
+  display: grid;
+  gap: 72px;
+  grid-template-columns: minmax(0, 500px) minmax(260px, 420px);
+  margin: 75px auto 0;
+  max-width: 1000px;
+  text-align: left;
+}
+.contact-form {
+  border: 1px solid #333;
+  border-radius: 16px;
+  padding: 30px 32px 32px;
+}
+.contact-form label,
+.contact-information-kicker,
+.contact-follow small,
+.contact-detail small {
+  color: #999;
+  display: block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .24em;
+}
+.contact-form label + input,
+.contact-form input + label,
+.contact-form label + textarea {
+  margin-top: 10px;
+}
+.contact-form input,
+.contact-form textarea {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #3b3b3b;
+  color: var(--paper);
+  display: block;
+  font: inherit;
+  font-size: 14px;
+  outline: 0;
+  padding: 12px 0;
+  resize: vertical;
+  width: 100%;
+}
+.contact-form input + label,
+.contact-form textarea + button {
+  margin-top: 27px;
+}
+.contact-form textarea {
+  min-height: 105px;
+}
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
+  color: #666;
+}
+.contact-form input:focus,
+.contact-form textarea:focus {
+  border-bottom-color: #ddd;
+}
+.contact-form button {
+  background: var(--paper);
+  border: 0;
+  border-radius: 999px;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .2em;
+  margin-top: 28px;
+  padding: 15px 22px;
+  text-transform: uppercase;
+  transition: transform .2s, background .2s;
+  width: 100%;
+}
+.contact-form button:hover:not(:disabled) {
+  background: #d5d5d1;
+  transform: translateY(-2px);
+}
+.contact-form button:disabled {
+  cursor: wait;
+  opacity: .65;
+}
+.contact-form-status {
+  font-size: 11px;
+  line-height: 1.45;
+  margin-top: 16px;
+}
+.contact-form-status.is-success { color: #b9c8b7; }
+.contact-form-status.is-error { color: #d1a7a0; }
+.contact-information {
+  padding-top: 6px;
+}
+.contact-information-copy {
+  color: #999;
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 20px 0 28px;
+  max-width: 390px;
+}
+.contact-detail {
+  align-items: center;
+  color: var(--paper);
+  display: flex;
+  gap: 14px;
+  margin-top: 18px;
+}
+.contact-detail-icon {
+  align-items: center;
+  border: 1px solid #444;
+  border-radius: 10px;
+  color: #bbb;
+  display: grid;
+  font-size: 14px;
+  height: 42px;
+  place-items: center;
+  width: 42px;
+}
+.contact-detail small,
+.contact-detail strong {
+  display: block;
+}
+.contact-detail strong {
+  font-size: 14px;
+  font-weight: 400;
+  margin-top: 5px;
+}
+.contact-follow {
+  border-top: 1px solid #333;
+  margin-top: 35px;
+  padding-top: 25px;
+}
+.contact-socials {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+.contact-socials a {
+  align-items: center;
+  border: 1px solid #444;
+  border-radius: 50%;
+  color: #bbb;
+  display: grid;
+  font-size: 10px;
+  height: 38px;
+  place-items: center;
+  width: 38px;
+}
+.contact-socials a:hover {
+  border-color: #aaa;
+  color: var(--paper);
+}
+.contact-email {
+  margin-top: 80px;
+}
+@media (max-width: 800px) {
+  .contact-layout {
+    gap: 45px;
+    grid-template-columns: 1fr;
+    margin-top: 55px;
+  }
+  .contact-form {
+    padding: 25px 22px 26px;
+  }
+  .contact-information {
+    padding: 0 4px;
+  }
+  .contact-email {
+    margin-top: 55px;
+  }
+}
+</style>
