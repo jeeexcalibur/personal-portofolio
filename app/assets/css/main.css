@@ -1223,3 +1223,24 @@
   0%, 100% { transform: translateX(-4px); }
   50% { transform: translateX(4px); }
 }
+
+/* Anchor targets: keep section headings clear of the fixed navbar */
+#home,
+#about,
+#education,
+#experience,
+#projects,
+#contact {
+  scroll-margin-top: 124px;
+}
+
+@media (max-width: 800px) {
+  #home,
+  #about,
+  #education,
+  #experience,
+  #projects,
+  #contact {
+    scroll-margin-top: 98px;
+  }
+}

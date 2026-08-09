@@ -1,5 +1,6 @@
 ﻿<script setup lang="ts">
 const isOpen = ref(false)
+const pendingHash = ref<string | null>(null)
 const links = [
   { number: '01', label: 'Home', href: '/#home' },
   { number: '02', label: 'About', href: '/#about' },
@@ -20,9 +21,22 @@ const navigateToSection = async (href: string) => {
     return
   }
 
-  await nextTick()
-  document.querySelector(target.hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  pendingHash.value = target.hash
   window.history.replaceState(null, '', target.pathname + target.hash)
+}
+
+const scrollToPendingSection = () => {
+  const hash = pendingHash.value
+  pendingHash.value = null
+  if (!hash) return
+
+  const target = document.querySelector(hash)
+  if (!target) return
+
+  const navbar = document.querySelector('.site-nav')
+  const offset = navbar ? navbar.getBoundingClientRect().height + 16 : 0
+  const top = target.getBoundingClientRect().top + window.scrollY - offset
+  window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' })
 }
 
 const closeMenu = () => {
@@ -36,6 +50,7 @@ const handleKeydown = (event: KeyboardEvent) => {
 watch(isOpen, (open) => {
   if (!import.meta.client) return
   document.body.style.overflow = open ? 'hidden' : ''
+  if (open) pendingHash.value = null
 })
 
 onMounted(() => window.addEventListener('keydown', handleKeydown))
@@ -56,7 +71,7 @@ onBeforeUnmount(() => {
     </button>
   </header>
 
-  <Transition name="menu-fade">
+  <Transition name="menu-fade" @after-leave="scrollToPendingSection">
     <div v-if="isOpen" id="site-menu" class="editorial-menu" role="dialog" aria-modal="true" aria-label="Site navigation" @click.self="closeMenu">
       <div class="editorial-menu-inner">
         <div class="editorial-menu-heading">
