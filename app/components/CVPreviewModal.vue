@@ -9,11 +9,40 @@ const cvVersions = [
 
 const activeVersion = ref('en')
 const isLoading = ref(true)
+const isIframeReady = ref(false)
 const currentCV = computed(() => cvVersions.find((version) => version.id === activeVersion.value) ?? cvVersions[0])
 
-const handleIframeLoad = () => { isLoading.value = false }
+let loadFallbackTimer: ReturnType<typeof setTimeout> | null = null
 
-watch(activeVersion, () => { isLoading.value = true })
+const clearLoadFallback = () => {
+  if (loadFallbackTimer) {
+    clearTimeout(loadFallbackTimer)
+    loadFallbackTimer = null
+  }
+}
+
+const loadCurrentCV = () => {
+  isLoading.value = true
+  isIframeReady.value = false
+  // Mount the iframe first, then load the PDF on the next tick. Chrome's PDF
+  // viewer is unreliable when the iframe is created and navigated at once.
+  nextTick(() => { isIframeReady.value = true })
+
+  // The iframe `load` event doesn't always fire for PDFs, so hide the loading
+  // overlay after a fallback delay instead of waiting on it indefinitely.
+  clearLoadFallback()
+  loadFallbackTimer = setTimeout(() => {
+    isLoading.value = false
+    loadFallbackTimer = null
+  }, 3000)
+}
+
+const handleIframeLoad = () => {
+  isLoading.value = false
+  clearLoadFallback()
+}
+
+watch(activeVersion, loadCurrentCV)
 
 const downloadCV = () => {
   const link = document.createElement('a')
@@ -31,11 +60,15 @@ const handleKeydown = (event: KeyboardEvent) => {
 }
 
 onMounted(() => document.addEventListener('keydown', handleKeydown))
-onUnmounted(() => document.removeEventListener('keydown', handleKeydown))
+onUnmounted(() => {
+  clearLoadFallback()
+  document.removeEventListener('keydown', handleKeydown)
+})
 
 watch(() => props.isOpen, (isOpen) => {
   document.body.style.overflow = isOpen ? 'hidden' : ''
-  if (isOpen) isLoading.value = true
+  if (isOpen) loadCurrentCV()
+  else clearLoadFallback()
 })
 </script>
 
@@ -57,7 +90,7 @@ watch(() => props.isOpen, (isOpen) => {
 
           <div class="relative min-h-0 flex-1 overflow-hidden bg-gray-800">
             <div v-if="isLoading" class="absolute inset-0 z-10 flex items-center justify-center bg-gray-800 text-sm text-gray-300">Loading PDF preview…</div>
-            <iframe :key="currentCV.id" :src="currentCV.file" class="h-[65vh] min-h-[420px] w-full" title="CV Preview" @load="handleIframeLoad"></iframe>
+            <iframe v-if="isIframeReady" :key="currentCV.id" :src="currentCV.file" class="h-[65vh] min-h-[420px] w-full" title="CV Preview" @load="handleIframeLoad"></iframe>
           </div>
 
           <div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-200 px-5 py-4">
