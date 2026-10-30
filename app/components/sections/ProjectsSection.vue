@@ -3,9 +3,10 @@ import { projects } from '~/data/portfolio'
 
 const reveal = useReveal()
 
-const showAll = ref(false)
-watch(showAll, () => reveal?.refresh(), { flush: 'post' })
-const displayedProjects = computed(() => showAll.value ? projects : projects.slice(0, 3))
+const FEATURED = 3
+const displayedProjects = computed(() => projects.slice(0, FEATURED))
+const highlightsFor = (project: (typeof projects)[number]) =>
+  (project.contributions?.length ? project.contributions.slice(0, 3) : project.tags)
 const projectPath = (title: string) => `/projects/${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`
 </script>
 
@@ -19,8 +20,11 @@ const projectPath = (title: string) => `/projects/${title.toLowerCase().replace(
       <template v-for="(project, index) in displayedProjects" :key="project.title">
         <article class="project-showcase reveal" :class="{ 'project-showcase-reverse': index % 2 === 1 }" :style="{ transitionDelay: `${(index % 2) * 120}ms` }">
           <figure class="project-showcase-visual">
-            <NuxtLink :to="projectPath(project.title)"><img :src="project.image" :alt="project.title" /></NuxtLink>
-            <figcaption><span>{{ String(index + 1).padStart(2, '0') }} / {{ String(projects.length).padStart(2, '0') }}</span><span class="project-progress" aria-hidden="true"><i v-for="progress in 3" :key="progress" :class="{ active: progress === (index % 3) + 1 }"></i></span></figcaption>
+            <NuxtLink :to="projectPath(project.title)"><img :src="project.image" :alt="project.title" :loading="index === 0 ? 'eager' : 'lazy'" decoding="async" /></NuxtLink>
+            <figcaption>
+              <span>{{ String(index + 1).padStart(2, '0') }} / {{ String(projects.length).padStart(2, '0') }}</span>
+              <span v-if="project.gallery?.length" class="project-screens">{{ project.gallery.length }} SCREENS</span>
+            </figcaption>
 
           </figure>
           <div class="project-showcase-details">
@@ -28,7 +32,7 @@ const projectPath = (title: string) => `/projects/${title.toLowerCase().replace(
             <h3>{{ project.title }} <span aria-hidden="true">↗</span></h3>
             <p class="project-description">{{ project.description }}</p>
             <p class="section-kicker project-highlights-label">HIGHLIGHTS</p>
-            <ul class="detail-list"><li v-for="(tag, tagIndex) in project.tags" :key="tag"><span>{{ String(tagIndex + 1).padStart(2, '0') }}</span>{{ tag }} implementation and integration</li></ul>
+            <ul class="detail-list"><li v-for="(item, itemIndex) in highlightsFor(project)" :key="item"><span>{{ String(itemIndex + 1).padStart(2, '0') }}</span>{{ item }}</li></ul>
             <div class="tag-list"><span v-for="tag in project.tags" :key="tag">{{ tag }}</span></div>
             <NuxtLink :to="projectPath(project.title)" class="section-link">VIEW PROJECT -></NuxtLink>
           </div>
@@ -37,9 +41,9 @@ const projectPath = (title: string) => `/projects/${title.toLowerCase().replace(
       </template>
     </div>
     <div class="projects-showmore reveal">
-      <button @click="showAll = !showAll" class="projects-showmore-btn">
-        {{ showAll ? 'SHOW LESS' : 'SEE MORE PROJECTS' }} ->
-      </button>
+      <NuxtLink to="/projects" class="projects-showmore-btn">
+        ALL {{ projects.length }} PROJECTS ->
+      </NuxtLink>
     </div>
   </section>
 </template>
@@ -59,8 +63,10 @@ const projectPath = (title: string) => `/projects/${title.toLowerCase().replace(
   font-family: inherit;
   font-size: 11px;
   font-weight: 600;
+  display: inline-block;
   letter-spacing: 0.22em;
   padding-bottom: 8px;
+  text-decoration: none;
   text-transform: uppercase;
 }
 .projects-showmore-btn:hover {

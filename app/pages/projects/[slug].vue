@@ -8,6 +8,17 @@ const project = computed(() => projects[projectIndex.value])
 const previousProject = computed(() => projects[(projectIndex.value - 1 + projects.length) % projects.length])
 const nextProject = computed(() => projects[(projectIndex.value + 1) % projects.length])
 const projectPath = (title: string) => `/projects/${slugify(title)}`
+
+useHead(() => ({
+  title: `${project.value.title}`,
+  meta: [
+    { name: 'description', content: project.value.description },
+    { property: 'og:title', content: `${project.value.title} · Jein Ananda` },
+    { property: 'og:description', content: project.value.description },
+    { property: 'og:type', content: 'article' },
+    ...(project.value.image ? [{ property: 'og:image', content: project.value.image }] : [])
+  ]
+}))
 </script>
 
 <template>
@@ -51,6 +62,23 @@ const projectPath = (title: string) => `/projects/${slugify(title)}`
         </div>
         <ul><li v-for="detail in project.impact?.details" :key="detail">{{ detail }}</li></ul>
       </aside>
+    </section>
+
+    <section v-if="project.gallery?.length" class="project-reference-gallery page-wrap">
+      <AwardsAwardGallery :images="project.gallery" :label="project.galleryLabel || 'SCREENS'" :size="project.gallerySize || 'default'" />
+    </section>
+
+    <section v-if="project.metrics?.length" class="project-reference-metrics page-wrap">
+      <div class="project-reference-metrics-head">
+        <p class="project-reference-kicker">{{ project.metricsLabel || 'MEASURED RESULT' }}</p>
+        <h2>Tested, not assumed.</h2>
+      </div>
+      <div class="project-reference-metrics-body">
+        <ul class="project-reference-metrics-list">
+          <li v-for="metric in project.metrics" :key="metric.label"><span>{{ metric.label }}</span><strong>{{ metric.value }}</strong></li>
+        </ul>
+        <p v-if="project.metricsFootnote" class="project-reference-metrics-note">{{ project.metricsFootnote }}</p>
+      </div>
     </section>
 
     <section class="project-reference-tools page-wrap">
@@ -163,6 +191,43 @@ const projectPath = (title: string) => `/projects/${slugify(title)}`
 .project-reference-impact ul { display: grid; gap: 12px; margin: 0; padding: 0; }
 .project-reference-impact li { color: var(--muted, #7f7f7d); font-size: 12px; line-height: 1.5; padding-left: 15px; position: relative; }
 .project-reference-impact li::before { color: var(--ink, #151515); content: '•'; left: 0; position: absolute; }
+.project-reference-gallery { padding-bottom: 72px; }
+.project-reference-metrics {
+  border-top: 1px solid var(--line, #15151529);
+  display: grid;
+  gap: clamp(28px, 5vw, 72px);
+  grid-template-columns: minmax(220px, .8fr) minmax(0, 1.4fr);
+  padding-bottom: 76px;
+  padding-top: 42px;
+}
+.project-reference-metrics h2 { font-size: clamp(24px, 2.4vw, 34px); font-weight: 500; letter-spacing: -.04em; margin: 10px 0 0; }
+.project-reference-metrics-list {
+  border-top: 1px solid var(--line, #15151529);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.project-reference-metrics-list li {
+  align-items: baseline;
+  border-bottom: 1px solid var(--line, #15151529);
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 14px 0;
+}
+.project-reference-metrics-list li:nth-child(odd) { padding-right: 24px; }
+.project-reference-metrics-list li:nth-child(even) { border-left: 1px solid var(--line, #15151529); padding-left: 24px; }
+.project-reference-metrics-list span { color: var(--muted, #7f7f7d); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+.project-reference-metrics-list strong { font-size: 17px; font-weight: 500; }
+.project-reference-metrics-note { color: var(--muted, #6f6f6d); font-size: 12px; line-height: 1.6; margin: 18px 0 0; max-width: 60ch; }
+@media (max-width: 900px) {
+  .project-reference-metrics { grid-template-columns: 1fr; }
+  .project-reference-metrics-list { grid-template-columns: 1fr; }
+  .project-reference-metrics-list li:nth-child(even) { border-left: 0; padding-left: 0; }
+  .project-reference-metrics-list li:nth-child(odd) { padding-right: 0; }
+}
 .project-reference-tools { align-items: center; border-top: 1px solid var(--line, #15151529); display: flex; justify-content: space-between; padding-bottom: 74px; padding-top: 28px; }
 .project-reference-tools h2 { font-size: 34px; margin: 10px 0 0; }
 .project-reference-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; max-width: 540px; }
@@ -181,7 +246,44 @@ const projectPath = (title: string) => `/projects/${slugify(title)}`
   .project-reference-copy h1 { font-size: clamp(48px, 14vw, 78px); }
   .project-reference-facts { grid-template-columns: 1fr; gap: 16px; }
   .project-reference-story { padding-bottom: 64px; padding-top: 54px; }
-  .project-reference-tools { align-items: flex-start; display: block; padding-bottom: 54px; }
+  .project-reference-gallery { padding-bottom: 72px; }
+.project-reference-metrics {
+  border-top: 1px solid var(--line, #15151529);
+  display: grid;
+  gap: clamp(28px, 5vw, 72px);
+  grid-template-columns: minmax(220px, .8fr) minmax(0, 1.4fr);
+  padding-bottom: 76px;
+  padding-top: 42px;
+}
+.project-reference-metrics h2 { font-size: clamp(24px, 2.4vw, 34px); font-weight: 500; letter-spacing: -.04em; margin: 10px 0 0; }
+.project-reference-metrics-list {
+  border-top: 1px solid var(--line, #15151529);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.project-reference-metrics-list li {
+  align-items: baseline;
+  border-bottom: 1px solid var(--line, #15151529);
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 14px 0;
+}
+.project-reference-metrics-list li:nth-child(odd) { padding-right: 24px; }
+.project-reference-metrics-list li:nth-child(even) { border-left: 1px solid var(--line, #15151529); padding-left: 24px; }
+.project-reference-metrics-list span { color: var(--muted, #7f7f7d); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+.project-reference-metrics-list strong { font-size: 17px; font-weight: 500; }
+.project-reference-metrics-note { color: var(--muted, #6f6f6d); font-size: 12px; line-height: 1.6; margin: 18px 0 0; max-width: 60ch; }
+@media (max-width: 900px) {
+  .project-reference-metrics { grid-template-columns: 1fr; }
+  .project-reference-metrics-list { grid-template-columns: 1fr; }
+  .project-reference-metrics-list li:nth-child(even) { border-left: 0; padding-left: 0; }
+  .project-reference-metrics-list li:nth-child(odd) { padding-right: 0; }
+}
+.project-reference-tools { align-items: flex-start; display: block; padding-bottom: 54px; }
   .project-reference-tags { justify-content: flex-start; margin-top: 24px; }
   .project-reference-pagination { grid-template-columns: 1fr; width: min(100% - 32px, 620px); }
   .project-reference-pagination a + a { border-left: 0; border-top: 1px solid var(--line, #15151529); padding-left: 0; text-align: left; }

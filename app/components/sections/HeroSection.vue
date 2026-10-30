@@ -1,6 +1,6 @@
 ﻿<script setup lang="ts">
 const name = 'Jein Ananda'
-const roles = ['Full-Stack Web Developer', 'UI/UX Designer', 'IT Infrastructure Engineer']
+const roles = ['IT Infrastructure Engineer', 'Full-Stack Web Developer', 'UI/UX Designer']
 const displayText = ref('')
 const isCVModalOpen = ref(false)
 const isPortraitHovered = ref(false)
