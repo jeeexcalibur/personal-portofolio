@@ -6,8 +6,9 @@ const links = [
   { number: '02', label: 'About', href: '/#about' },
   { number: '03', label: 'Education', href: '/#education' },
   { number: '04', label: 'Experience', href: '/#experience' },
-  { number: '05', label: 'Projects', href: '/#projects' },
-  { number: '06', label: 'Contact', href: '/#contact' }
+  { number: '05', label: 'Awards & Organizations', href: '/#awards' },
+  { number: '06', label: 'Projects', href: '/#projects' },
+  { number: '07', label: 'Contact', href: '/#contact' }
 ]
 
 const navigateToSection = async (href: string) => {

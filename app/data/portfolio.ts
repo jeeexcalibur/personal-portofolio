@@ -59,7 +59,7 @@ export const experiences: Experience[] = [
     company: 'Maybank',
     companyContext: "One of Southeast Asia's largest banking groups. This role sits in branch IT operations for the Balikpapan area, supporting 3 branch offices and 100+ employees.",
     role: 'Technology Infrastructure Engineer',
-    period: 'APR 2026 — PRESENT',
+    period: 'APR 2026 — OCT 2026',
     type: 'FULL-TIME',
     location: 'Balikpapan, Indonesia',
     image: '/infra.jpg',
