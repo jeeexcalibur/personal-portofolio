@@ -4,7 +4,10 @@ import { projects } from '~/data/portfolio'
 const reveal = useReveal()
 
 const FEATURED = 3
-const displayedProjects = computed(() => projects.slice(0, FEATURED))
+const displayedProjects = computed(() => {
+  const picked = projects.filter(project => project.featured)
+  return (picked.length ? picked : projects).slice(0, FEATURED)
+})
 const highlightsFor = (project: (typeof projects)[number]) =>
   (project.contributions?.length ? project.contributions.slice(0, 3) : project.tags)
 const projectPath = (title: string) => `/projects/${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`

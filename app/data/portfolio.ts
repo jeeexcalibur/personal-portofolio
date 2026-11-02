@@ -36,6 +36,7 @@ export interface Project {
   demoUrl: string
   repoUrl: string
   role?: string
+  featured?: boolean
   relatedExperience?: string
   contributions?: string[]
   galleryLabel?: string
@@ -59,7 +60,7 @@ export const experiences: Experience[] = [
     company: 'Maybank',
     companyContext: "One of Southeast Asia's largest banking groups. This role sits in branch IT operations for the Balikpapan area, supporting 3 branch offices and 100+ employees.",
     role: 'Technology Infrastructure Engineer',
-    period: 'APR 2026 — OCT 2026',
+    period: 'APR 2026 — PRESENT',
     type: 'FULL-TIME',
     location: 'Balikpapan, Indonesia',
     image: '/infra.jpg',
@@ -367,6 +368,56 @@ export const awards: Award[] = [
 ]
 
 export const projects: Project[] = [
+  {
+    title: 'AWS Idle Resource Checker',
+    category: 'CLOUD INFRASTRUCTURE',
+    description: 'A Python tool that scans EC2 instances, reads CPU utilisation from CloudWatch, flags idle servers, and estimates what keeping them running costs per month. Built and tested in a locked-down AWS Free Plan lab.',
+    image: '/projects/aws-idle-resource-checker/cover.jpg',
+    tags: ['Python', 'boto3', 'EC2', 'CloudWatch', 'IAM', 'AWS CLI'],
+    demoUrl: '#',
+    repoUrl: '#',
+    role: 'Solo Project',
+    featured: true,
+    contributions: [
+      'Set up an AWS Free Plan account with MFA on the root user, a separate IAM user for daily work, and an AWS Budgets alert as a cost safety net',
+      'Launched three EC2 test instances in Singapore — two left idle and one running continuous CPU load — all with no public IP, no SSH, and no key pairs',
+      'Connected from the laptop through the AWS CLI, keeping access keys in the local AWS config so no credentials appear in code or in the repository',
+      'Wrote a Python script with boto3 that lists running instances and reads each one\'s 2-hour average CPU from CloudWatch',
+      'Flagged instances under 5% CPU as idle and estimated monthly savings from the hourly instance price over a 730-hour month',
+      'Exported results to CSV, then terminated every test resource after capturing evidence'
+    ],
+    galleryLabel: 'EVIDENCE — AWS CONSOLE',
+    gallery: [
+      { src: '/projects/aws-idle-resource-checker/01-ec2-dashboard.jpg', alt: 'EC2 dashboard in ap-southeast-1 showing three running instances and no key pairs', caption: 'Lab account: three running instances in ap-southeast-1, zero key pairs, zero public IPs.', width: 1600, height: 782 },
+      { src: '/projects/aws-idle-resource-checker/02-instances.jpg', alt: 'EC2 instance list with idle-1, idle-2 and busy-1', caption: 'Test fleet: idle-1 and idle-2 left alone, busy-1 running a continuous CPU load.', width: 1600, height: 784 },
+      { src: '/projects/aws-idle-resource-checker/03-cloudwatch-metrics.jpg', alt: 'CloudWatch monitoring graphs for CPU utilisation and CPU credit balance', caption: 'CloudWatch: CPU utilisation plus credit balance per instance — the metric the script reads.', width: 1600, height: 782 },
+      { src: '/projects/aws-idle-resource-checker/04-checker-output.jpg', alt: 'Terminal output of checker.py listing idle instances and the monthly saving', caption: 'checker.py output: both idle instances at 0.2% CPU, $19.27 per month of potential saving.', width: 1600, height: 897 }
+    ],
+    impact: {
+      summary: 'Turned a blank AWS account into a small, safely locked-down lab, and built a tool that makes idle cloud spend visible. Results come from a simulated workload, not production data.',
+      stats: [
+        { value: '3', label: 'INSTANCES ANALYSED' },
+        { value: '2', label: 'IDLE DETECTED' },
+        { value: '$19', label: 'EST. SAVING / MONTH' }
+      ],
+      details: [
+        'Idle servers sat at about 0.2% CPU while the loaded one held near 50%, which gave a clear threshold to separate them',
+        'Estimated saving on the test setup was about $19 per month, using an on-demand hourly price checked against AWS pricing',
+        'Test servers were closed by default: no public IP, no inbound traffic, no stored keys',
+        'CPU credit graphs showed why CPU alone can mislead on burstable instances — the loaded server used up its credits while the idle ones kept accumulating them'
+      ]
+    },
+    metricsLabel: 'MEASURED RESULT — LAB RUN',
+    metrics: [
+      { label: 'Idle CPU', value: '0.2%' },
+      { label: 'Loaded CPU', value: '~50%' },
+      { label: 'Idle threshold', value: 'under 5%' },
+      { label: 'Hours per month', value: '730' },
+      { label: 'On-demand price', value: '$0.0104/hr' },
+      { label: 'Estimated saving', value: '$19.27/mo' }
+    ],
+    metricsFootnote: 'One test run against three t3.micro instances in ap-southeast-1; every resource was terminated afterwards. Savings cover instance hours only — EBS and data transfer are excluded.'
+  },
     { 
     title: 'EIS Mobile UI/UX Design', 
     category: 'UI/UX DESIGN', 
@@ -376,6 +427,7 @@ export const projects: Project[] = [
     demoUrl: 'https://www.figma.com/proto/AZjby73mEu6pIhxTxE2RkD/Mobile-Prototype', 
     repoUrl: '#',
     role: 'UI/UX Designer',
+    featured: true,
     relatedExperience: 'PT. Komatsu Remanufacturing Asia',
     contributions: [
       'Conducted stakeholder interviews and user research with employees across multiple departments',
@@ -428,6 +480,7 @@ export const projects: Project[] = [
     demoUrl: '#',
     repoUrl: '#',
     role: 'UI/UX Designer · KKN Team',
+    featured: true,
     relatedExperience: 'KKN — Community Service Programme',
     contributions: [
       'Mapped a six-page structure: home, ticket catalogue, flora & fauna, animal profiles, news, and documentary.',

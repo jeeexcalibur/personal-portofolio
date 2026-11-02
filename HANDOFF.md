@@ -172,3 +172,23 @@ Maybank (revisi 31 Okt, setelah user menyatakan semua foto boleh dipublikasikan)
 
 Catatan: di 2 foto Komatsu yang dipakai ada wajah rekan kerja. Publikasi butuh izin mereka —
 kalau tidak ada, ganti dengan crop tanpa orang.
+
+## Project baru: AWS Idle Resource Checker
+
+Ditambahkan 2 Nov. Sumber gambar: `D:\Project\Raw\Projects\aws` (4 screenshot console + VS Code).
+Aset: `public/projects/aws-idle-resource-checker/` — `cover.jpg` 1440x1014 (dari screenshot VS Code:
+kode + output terminal) dan 4 gambar galeri 1600x782.
+
+- slug `/projects/aws-idle-resource-checker`, category `CLOUD INFRASTRUCTURE`, role `Solo Project`,
+  relatedExperience kosong → tampil "Independent Project".
+- Isi: 6 contributions, 3 impact stats (3 dianalisis, 2 idle, $19/bulan), 4 detail,
+  blok `MEASURED RESULT — LAB RUN` (0.2% / ~50% / ambang 5% / 730 jam / $0.0104 per jam / $19.27).
+- Angka berasal dari satu kali uji di lab Free Plan, semua resource sudah diterminasi.
+  Jangan menaikkan klaim jadi "production" atau menambah angka di luar 3 instance.
+
+### Field `featured` (baru)
+
+`Project.featured?: boolean`. `ProjectsSection.vue` mengambil `projects.filter(p => p.featured)`,
+fallback ke 3 teratas kalau tidak ada yang ditandai. Homepage sekarang: AWS Idle Resource Checker,
+EIS Mobile UI/UX Design, MiniZoo. Chremate tetap ada di `/projects` (grup FULLSTACK DEVELOPMENT).
+Untuk mengganti isi homepage, cukup pindahkan `featured: true` — jangan mengandalkan urutan array.
